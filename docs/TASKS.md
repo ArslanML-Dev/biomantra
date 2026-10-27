@@ -32,7 +32,7 @@
 
 **Check:** run it. Print the row count, first/last timestamp and the number of missing hours. If the API refuses history, stop and report it, then implement the Open-Meteo fallback behind `--source openmeteo`.
 
-### [ ] D1-T3 Download weather and merge (SPEC §4.2–4.3)
+### [x] D1-T3 Download weather and merge (SPEC §4.2–4.3)
 **Build:** `backend/scripts/fetch_weather.py` and `backend/scripts/make_dataset.py`, which writes `data/hourly.parquet`.
 
 **Check:** print the row count, date range, % missing before/after filling, and `df.describe()` for pm25, temp, rh and wind.
