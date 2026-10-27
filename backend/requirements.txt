@@ -1,16 +1,19 @@
 # Install CPU torch first:
 #   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+# Older pandas/pyarrow/numpy/scikit-learn/numba pins: Windows Smart App Control blocks DLLs from very new wheels.
 fastapi==0.162.0
 uvicorn[standard]==0.54.0
 python-multipart==0.0.32
 python-dotenv==1.2.4
 requests==2.34.2
-pandas==3.1.0
-pyarrow==26.0.0
-numpy==2.4.6
-scikit-learn==1.9.1
+pandas==2.2.3
+pyarrow==18.1.0
+numpy==2.2.6
+scikit-learn==1.6.1
 lightgbm==4.7.0
 shap==0.51.0
+numba==0.61.2
+llvmlite==0.44.0
 matplotlib==3.11.2
 ultralytics==8.4.191
 ImageHash==4.3.2

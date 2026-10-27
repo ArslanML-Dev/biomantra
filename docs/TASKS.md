@@ -27,7 +27,7 @@
 
 **Ask the user:** the exact campus latitude/longitude (from Google Maps) and their OpenWeather key. They put the key into `.env` themselves.
 
-### [ ] D1-T2 Download PM2.5 history (SPEC §4.1)
+### [x] D1-T2 Download PM2.5 history (SPEC §4.1)
 **Build:** `backend/scripts/fetch_history.py --start 2021-01-01`. It uses 30-day chunks, retries, a progress print, and writes `data/air_raw.csv`.
 
 **Check:** run it. Print the row count, first/last timestamp and the number of missing hours. If the API refuses history, stop and report it, then implement the Open-Meteo fallback behind `--source openmeteo`.
