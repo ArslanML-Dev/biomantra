@@ -1,0 +1,11 @@
+.env
+.venv/
+__pycache__/
+data/
+uploads/
+*.db
+models/*.pt
+*.pt
+node_modules/
+dist/
+biomantra_claude_code_kit.zip
