@@ -117,12 +117,12 @@
 ### [x] D2-T3 Leaderboard screen
 **Check:** both tabs render from `/leaderboard`; the progress bars match `points_week/goal`.
 
-### [x] D2-T4 Capacitor Android setup (SPEC §11)
+### [ ] D2-T4 Capacitor Android setup (SPEC §11) — built; WAITING FOR USER (APK on phone)
 **Build:** install the Capacitor packages, init, add android, add permissions, and configure the dev server or API URL.
 
 **Check:** the debug APK installs on a real phone and opens the Home screen with live data.
 
-### [ ] D2-T5 Act screen with live camera + GPS (SPEC §10.2)
+### [ ] D2-T5 Act screen with live camera + GPS (SPEC §10.2) — built; WAITING FOR USER (phone)
 **Check, on the phone:**
 - Submit a real sapling/plant photo and see the result screen with the status and reasons.
 - Submit the same scene twice and see the second one rejected as a duplicate.
