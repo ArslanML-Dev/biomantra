@@ -63,7 +63,7 @@
 
 **Check:** `pytest -q tests/test_forecast.py` passes.
 
-### [ ] D1-T7 `/forecast` endpoint (SPEC §5.8–5.10, §9)
+### [x] D1-T7 `/forecast` endpoint (SPEC §5.8–5.10, §9)
 **Build:**
 - In `app/main.py`: the FastAPI app, CORS, `/health` and `/forecast` with `lang=en|hi`.
 - In `app/forecast.py`: the SHAP reason, the tips and a 30-minute cache.
