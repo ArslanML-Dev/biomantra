@@ -75,7 +75,7 @@
 
 **Check:** `curl localhost:8000/meta` shows 5 institutions and 10 users.
 
-### [ ] D1-T9 Verification pipeline (SPEC §7)
+### [x] D1-T9 Verification pipeline (SPEC §7)
 **Build:**
 - `app/verify.py` with these pure functions:
   - `check_clock`
