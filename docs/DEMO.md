@@ -6,24 +6,21 @@ You need the laptop and the phone on the **same Wi-Fi**. Do the one-time setup t
 
 ## One-time setup (about 30 minutes, only once)
 
-### A. Install the Android SDK (needed to build the app)
-1. Open **Android Studio** from the Start menu.
-2. In the setup wizard, choose **Standard** and click **Next** until you reach the licence page.
-3. Select each licence on the left, tick **Accept**, then click **Finish**. Wait for the downloads (about 10–15 minutes).
-4. Close Android Studio.
+### A. App file: already built
+`C:\dev\BIO-MANTRA-PROTOTYPE\BioMantra.apk` is ready. Its default server is `http://192.168.1.19:8000`, and you can change that in the app under ⚙ Settings.
+To rebuild it after code changes, open PowerShell in `C:\dev\BIO-MANTRA-PROTOTYPE\frontend` and run `powershell -ExecutionPolicy Bypass -File .\build_apk.ps1`. The Android SDK and JDK 21 are already installed by `setup_android_sdk.ps1`, and Android Studio isn't needed.
 
-### B. Build the app (APK)
-5. Open PowerShell in `C:\dev\BIO-MANTRA-PROTOTYPE\frontend` and run:
-   `powershell -ExecutionPolicy Bypass -File .\build_apk.ps1`
-   The first build takes 5–10 minutes. The APK will be at `frontend\android\app\build\outputs\apk\debug\app-debug.apk`.
-6. Copy `app-debug.apk` to the phone (USB cable, or email it to yourself). Open it on the phone and allow **"Install unknown apps"** when asked.
+### B. Put the app on the phone (pick one)
+1. **Without a cable:** copy `BioMantra.apk` to the phone (WhatsApp/Drive/email it to yourself, or use a USB file transfer). Open it on the phone, and allow **"Install unknown apps"** when Android asks.
+2. **With a USB cable:** on the phone, go to Settings → About phone → tap **Build number** 7 times → Settings → Developer options → turn on **USB debugging**. Connect the cable and tap **Allow** on the phone. Then, on the laptop, run:
+   `& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" install -r C:\dev\BIO-MANTRA-PROTOTYPE\BioMantra.apk`
 
 ### C. Firewall, so the phone can reach the laptop
-7. Easiest: the first time you run the start script, a **Windows Security Alert** window may pop up for `python.exe` and `node.exe`. For each one:
+3. Easiest: the first time you run the start script, a **Windows Security Alert** window may pop up for `python.exe` and `node.exe`. For each one:
    - tick **Private networks**
    - untick **Public networks**
    - click **Allow access**. Don't click Cancel, because that blocks the phone.
-8. Tighter alternative (only ports 8000 and 5173 are opened, on private Wi-Fi only): right-click **Windows PowerShell → Run as administrator**, then run:
+4. Tighter alternative (only ports 8000 and 5173 are opened, on private Wi-Fi only): right-click **Windows PowerShell → Run as administrator**, then run:
    `cd C:\dev\BIO-MANTRA-PROTOTYPE; powershell -ExecutionPolicy Bypass -File .\start_demo.ps1 -Firewall`
 
 ---
@@ -45,7 +42,7 @@ You need the laptop and the phone on the **same Wi-Fi**. Do the one-time setup t
 When you're finished, press **Enter** in the start-script window to stop both servers.
 
 ### If something goes wrong
-- **Test connection fails:** check the phone is on the same Wi-Fi (not mobile data). Check the address matches the "PHONE APP" line exactly. Then redo step 7 (the firewall).
+- **Test connection fails:** check the phone is on the same Wi-Fi (not mobile data). Check the address matches the "PHONE APP" line exactly. Then redo step 3 (the firewall).
 - **Website on the phone browser:** open the "PHONE BROWSER" address. It finds the backend by itself.
 - **Forecast says "unavailable":** the laptop needs internet, because the forecast fetches live air-quality data.
 - **No needs-review item in admin:** the AI may have approved or rejected the photo outright. Take another photo with the plant clearly in view.

@@ -25,8 +25,8 @@ Everything that could be built and checked on the laptop without a phone, accoun
 
 ## 2. What failed or is weak, and why
 
-1. **No APK was built.** The Android SDK isn't on this PC: Android Studio is installed but has never been opened, so its setup wizard (SDK download and licence acceptance) hasn't run. Every phone check (D2-T4, T5, T6, D3-T4) is therefore untested.
-2. **LightGBM only ties linear regression** (MAE 30.02 vs 29.97); it does beat persistence (33.66). Suggested fix: predict the **mean of the next 24 h** (CPCB bands are 24-h averages) instead of the single hour t+24.
+1. ~~No APK was built.~~ **Fixed (round 3):** the SDK was installed without the Android Studio UI (`frontend/setup_android_sdk.ps1`), plus a portable JDK 21, because Android Studio's Java 25 is too new for Gradle 8.11. `BioMantra.apk` is now built. No phone was connected over USB, so it isn't installed yet, and every on-phone check (D2-T4, T5, T6, D3-T4) is still untested.
+2. ~~LightGBM only ties linear regression.~~ **Improved (round 3):** the target is now the next-24 h mean, with next-24 h weather features. LightGBM test MAE is 18.07 vs linear 19.53 vs persistence 24.33, and category accuracy went from 0.399 to 0.559 (see `docs/evidence/model_experiments.md`). The scores with weather features are optimistic, because training used the actual weather rather than a forecast.
 3. **The AI is unsure about real plants.** A clear potted plant scored 0.421 (needs_review), because COCO has no sapling/bin classes. Expect most real actions to need admin approval. That's by design, and it's explained on the About page.
 4. **No OpenWeather key**, so all data is Open-Meteo modelled data starting Aug 2022 (not 2021).
 5. **Fraud cases 3, 6, 7** weren't run: they need real phone photos. Cases 1/2/8 used stand-in images (a COCO photo and a synthetic wall).
@@ -47,12 +47,11 @@ Open PowerShell. Every command below starts from `C:\dev\BIO-MANTRA-PROTOTYPE`.
 ### B. Screenshots (D2-T2, end of Day 2)
 6. On the laptop, take screenshots of Home (EN and हिं), Leaderboard (both tabs), Map, About and Admin. Save them to `docs\evidence\screens\`.
 
-### C. Install the Android SDK and build the APK (D2-T4)
-7. Open **Android Studio** from the Start menu → follow the setup wizard with the **Standard** install → accept the SDK licences → wait for the downloads to finish. Then close it.
-8. `cd frontend; .\build_apk.ps1`. The first build downloads Gradle and takes 5–10 minutes.
-9. On the phone: Settings → About phone → tap **Build number** 7 times → Developer options → turn on **USB debugging**. Connect the phone by USB and allow the PC.
-10. Install the APK: either Android Studio → **Open** `frontend\android` → Run ▶ on your phone, or copy `frontend\android\app\build\outputs\apk\debug\app-debug.apk` to the phone and open it (allow "install unknown apps").
-11. Open Bio Mantra on the phone → pick a user → check the Home screen shows live data. If it doesn't, the phone can't reach `http://<laptop-IP>:8000`: check the firewall (step 3) and `VITE_API_URL`, then rebuild (step 8).
+### C. Install the app on the phone (D2-T4)
+7. The APK is already built: `C:\dev\BIO-MANTRA-PROTOTYPE\BioMantra.apk`.
+8. Install it, either by copying the file to the phone and opening it (allow "install unknown apps"), or over USB (USB debugging on, then `& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" install -r BioMantra.apk`).
+9. Open Bio Mantra → ⚙ → Server URL = the "PHONE APP" address that `start_demo.ps1` prints → Test connection → Save.
+10. Pick a user → check the Home screen shows live data.
 
 ### D. Phone action tests (D2-T5, D2-T6)
 12. Act → "Planted a sapling" → allow camera and location → photograph a real plant → see the result screen (status, reasons, points).

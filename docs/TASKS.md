@@ -117,7 +117,7 @@
 ### [x] D2-T3 Leaderboard screen
 **Check:** both tabs render from `/leaderboard`; the progress bars match `points_week/goal`.
 
-### [ ] D2-T4 Capacitor Android setup (SPEC §11) — built; WAITING FOR USER (APK on phone)
+### [ ] D2-T4 Capacitor Android setup (SPEC §11) — APK built (BioMantra.apk); WAITING FOR USER (install on phone)
 **Build:** install the Capacitor packages, init, add android, add permissions, and configure the dev server or API URL.
 
 **Check:** the debug APK installs on a real phone and opens the Home screen with live data.
