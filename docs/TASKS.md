@@ -88,7 +88,7 @@
 
 **Check:** `pytest -q tests/test_verify.py` passes. Then run `ai_check` on 2 real local images (a plant, a wall) and print the detections.
 
-### [ ] D1-T10 `/actions`, scoring, leaderboard, hotspots, admin (SPEC §8–9)
+### [x] D1-T10 `/actions`, scoring, leaderboard, hotspots, admin (SPEC §8–9)
 **Build:** `app/scoring.py`, the remaining endpoints, the `/uploads` static route and `tests/test_scoring.py` + `tests/test_api.py`.
 
 **Check:**
