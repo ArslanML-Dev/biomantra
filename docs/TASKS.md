@@ -101,7 +101,7 @@
 
 ## Day 2: the app (React + Capacitor)
 
-### [ ] D2-T1 React app skeleton
+### [x] D2-T1 React app skeleton
 **Build:**
 - Vite React TypeScript in `frontend/`, with react-router.
 - `src/api.ts` (fetch helpers using `VITE_API_URL`).
