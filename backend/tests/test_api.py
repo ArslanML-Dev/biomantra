@@ -80,3 +80,37 @@ def test_review_then_admin_approve(client: TestClient, monkeypatch: pytest.Monke
                        json={"decision": "approve", "reviewer": "coordinator"}).json()
     assert done == {"id": result["id"], "status": "approved", "points": 2}
     assert client.get("/hotspots").json()[0]["open"] is True
+
+
+def test_cleanup_before_after_flow(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Littered before + clean after is approved and closes a nearby hotspot; still littered is rejected."""
+    bottle = {"name": "bottle", "conf": 0.8, "box": [0, 0, 1, 1]}
+    monkeypatch.setattr(verify, "detect", lambda image: [bottle, bottle])
+    report = post_action(client, action_type="dumping_report")
+    assert report["status"] == "approved"
+    assert client.get("/hotspots").json()[0]["open"] is True
+
+    # before photo has 3 bottles, after photo has none (detect sees the after photo first, then before)
+    calls = iter([[], [bottle] * 3])
+    monkeypatch.setattr(verify, "detect", lambda image: next(calls))
+    files = {"photo": ("after.jpg", jpeg_bytes(21), "image/jpeg"),
+             "before_photo": ("before.jpg", jpeg_bytes(22), "image/jpeg")}
+    data = {"user_id": 3, "action_type": "cleanup", "lat": settings.LAT + 0.0005, "lon": settings.LON,
+            "client_time": datetime.now(timezone.utc).isoformat()}
+    clean = client.post("/actions", data=data, files=files).json()
+    assert clean["status"] == "approved" and clean["points"] == 5
+    assert client.get("/hotspots").json()[0]["open"] is False
+
+    monkeypatch.setattr(verify, "detect", lambda image: [bottle] * 3)
+    files = {"photo": ("after.jpg", jpeg_bytes(31), "image/jpeg"),
+             "before_photo": ("before.jpg", jpeg_bytes(32), "image/jpeg")}
+    dirty = client.post("/actions", data=data, files=files).json()
+    assert dirty["status"] == "rejected" and verify.REASON_REJECTED in dirty["reasons"]
+
+
+def test_cleanup_without_before_photo_is_400(client: TestClient) -> None:
+    """A cleanup must include the before photo."""
+    resp = client.post("/actions", data={"user_id": 1, "action_type": "cleanup", "lat": settings.LAT,
+                                         "lon": settings.LON, "client_time": datetime.now(timezone.utc).isoformat()},
+                       files={"photo": ("p.jpg", jpeg_bytes(41), "image/jpeg")})
+    assert resp.status_code == 400

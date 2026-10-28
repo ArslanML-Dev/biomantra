@@ -128,7 +128,7 @@
 - Submit the same scene twice and see the second one rejected as a duplicate.
 - On the website, the Act page shows the "app only" message.
 
-### [ ] D2-T6 Cleanup flow (before + after)
+### [ ] D2-T6 Cleanup flow (before + after) — built + API-tested; WAITING FOR USER (phone)
 **Check:** the before/after submission works end to end, and the result is shown.
 
 **End of Day 2:** take screenshots of every screen on the phone, then commit and summarise.
