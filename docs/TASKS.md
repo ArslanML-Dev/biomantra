@@ -37,7 +37,7 @@
 
 **Check:** print the row count, date range, % missing before/after filling, and `df.describe()` for pm25, temp, rh and wind.
 
-### [ ] D1-T4 EDA plots for the report
+### [x] D1-T4 EDA plots for the report
 **Build:** `backend/scripts/eda.py`, saving 4 plots to `docs/evidence/`:
 1. Monthly mean PM2.5 (the seasonality).
 2. Mean PM2.5 by hour of day.
