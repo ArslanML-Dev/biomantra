@@ -63,6 +63,13 @@ pytest -q
 cd frontend && npm install
 npm run dev -- --host
 npm run build && npx cap sync android && npx cap open android
+.\build_apk.ps1                # Windows: one-step debug APK (needs Android SDK)
+
+# backend scripts (from backend/)
+python scripts/eda.py
+python scripts/train_forecast.py
+python scripts/check_ai.py sapling plant.jpg wall.jpg
+python scripts/fraud_tests.py --plant p.jpg --wall w.jpg
 ```
 
 ## Out of scope

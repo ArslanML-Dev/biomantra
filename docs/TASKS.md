@@ -154,7 +154,7 @@
 ### [ ] D3-T5 Fraud test table (SPEC §12, manual) — 5/8 run with stand-in images; WAITING FOR USER (real photos)
 **Check:** fill `docs/evidence/test_results.md` with the **real** result of all 8 cases, including failures, and a short "what we learned" section.
 
-### [ ] D3-T6 Demo rehearsal + README
+### [ ] D3-T6 Demo rehearsal + README — README + changes doc done, API demo run twice clean; WAITING FOR USER (phone + projector run)
 **Build:**
 - `README.md`: what it is, setup steps, how to run, architecture, model results table, limitations, credits/licences.
 - `docs/evidence/changes_from_synopsis.md`.
