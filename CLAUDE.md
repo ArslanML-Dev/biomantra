@@ -63,7 +63,7 @@ pytest -q
 cd frontend && npm install
 npm run dev -- --host
 npm run build && npx cap sync android && npx cap open android
-powershell -ExecutionPolicy Bypass -File .setup_android_sdk.ps1   # one-time: Android SDK + JDK 21, no Android Studio UI
+powershell -ExecutionPolicy Bypass -File .\setup_android_sdk.ps1   # one-time: Android SDK + JDK 21, no Android Studio UI
 .\build_apk.ps1                # Windows: one-step debug APK (needs Android SDK)
 
 # backend scripts (from backend/)
