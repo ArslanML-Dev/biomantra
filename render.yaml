@@ -1,0 +1,19 @@
+# Render blueprint for the Bio Mantra backend (free web service). Secrets are set in the Render dashboard.
+services:
+  - type: web
+    name: biomantra-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: LAT
+        value: "28.4725"
+      - key: LON
+        value: "77.4889"
+      - key: ADMIN_TOKEN
+        sync: false
