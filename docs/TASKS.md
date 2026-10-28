@@ -46,7 +46,7 @@
 
 **Check:** the files exist. Write 3 bullet observations from the real plots into `docs/evidence/eda_notes.md`.
 
-### [ ] D1-T5 Features and training (SPEC §5.1–5.6)
+### [x] D1-T5 Features and training (SPEC §5.1–5.6)
 **Build:**
 - `app/forecast.py` with:
   - `build_features(df) -> (X, y)`

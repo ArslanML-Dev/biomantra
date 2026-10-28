@@ -1,0 +1,33 @@
+{
+  "data_source": "openmeteo",
+  "rows": 37008,
+  "test_period": [
+    "2026-03-08",
+    "2026-10-25"
+  ],
+  "best_iteration": 201,
+  "persistence": {
+    "mae": 33.657,
+    "rmse": 50.442,
+    "r2": 0.169,
+    "acc_cat": 0.409,
+    "macro_f1": 0.364,
+    "recall_poor_plus": 0.716
+  },
+  "linear": {
+    "mae": 29.973,
+    "rmse": 44.942,
+    "r2": 0.34,
+    "acc_cat": 0.407,
+    "macro_f1": 0.328,
+    "recall_poor_plus": 0.633
+  },
+  "lightgbm": {
+    "mae": 30.018,
+    "rmse": 44.156,
+    "r2": 0.363,
+    "acc_cat": 0.399,
+    "macro_f1": 0.335,
+    "recall_poor_plus": 0.681
+  }
+}
