@@ -44,3 +44,29 @@ def test_target_is_pm25_24h_ahead() -> None:
 def test_category_band_edges(value: float, category: str) -> None:
     """CPCB band edges map to the right category."""
     assert pm25_to_category(value)[0] == category
+
+
+def test_mean24_target_is_mean_of_next_24_hours() -> None:
+    """y at row t equals the mean of pm25 over rows t+1 .. t+24."""
+    df = make_hourly()
+    _, y = build_features(df, target="mean24")
+    assert abs(y.iloc[10] - df["pm25"].iloc[11:35].mean()) < 1e-9
+    assert y.iloc[-24:].isna().all()
+
+
+def test_future_weather_never_uses_future_pm25() -> None:
+    """With next-24h weather features, changing FUTURE PM2.5 still leaves features at t unchanged."""
+    df = make_hourly()
+    t = 120
+    X_before, _ = build_features(df, with_future_weather=True)
+    changed = df.copy()
+    changed.iloc[t + 1:, changed.columns.get_loc("pm25")] += 500
+    X_after, _ = build_features(changed, with_future_weather=True)
+    pd.testing.assert_frame_equal(X_before.iloc[:t + 1], X_after.iloc[:t + 1])
+
+
+def test_future_weather_is_next_24h_mean() -> None:
+    """fut_temp_mean24 at t is the mean temperature over t+1 .. t+24."""
+    df = make_hourly()
+    X, _ = build_features(df, with_future_weather=True)
+    assert abs(X["fut_temp_mean24"].iloc[10] - df["temp"].iloc[11:35].mean()) < 1e-9

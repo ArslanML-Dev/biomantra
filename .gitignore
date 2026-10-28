@@ -12,3 +12,4 @@ biomantra_claude_code_kit.zip
 .pytest_cache/
 *.tsbuildinfo
 android/app/build/
+BioMantra.apk

@@ -18,5 +18,11 @@
   "hour",
   "dow",
   "month",
-  "is_winter"
+  "is_winter",
+  "fut_temp_mean24",
+  "fut_rh_mean24",
+  "fut_wind_speed_mean24",
+  "fut_wind_dir_sin_mean24",
+  "fut_wind_dir_cos_mean24",
+  "fut_precip_sum24"
 ]

@@ -8,7 +8,7 @@ const STRINGS = {
   map: { en: "Map", hi: "नक्शा" },
   about: { en: "About", hi: "जानकारी" },
   admin: { en: "Admin", hi: "एडमिन" },
-  tomorrow: { en: "PM2.5 tomorrow (µg/m³)", hi: "कल का PM2.5 (µg/m³)" },
+  tomorrow: { en: "PM2.5 next 24 h, average (µg/m³)", hi: "अगले 24 घंटे का औसत PM2.5 (µg/m³)" },
   now: { en: "Now", hi: "अभी" },
   takeAction: { en: "Take action", hi: "कदम उठाएँ" },
   whoAreYou: { en: "Who are you?", hi: "आप कौन हैं?" },

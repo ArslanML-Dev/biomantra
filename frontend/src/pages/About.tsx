@@ -25,7 +25,7 @@ export default function About() {
         {error && <p className="error">{error}</p>}
         {metrics && (
           <>
-            <p className="muted">Target: PM2.5 24 h ahead · {metrics.rows.toLocaleString()} hourly rows · test period {metrics.test_period[0]} → {metrics.test_period[1]} · data source: {metrics.data_source}</p>
+            <p className="muted">Target: {metrics.model.target_label}{metrics.model.future_weather ? " · features: past data + next-24 h weather forecast" : ""} · {metrics.rows.toLocaleString()} hourly rows · test period {metrics.test_period[0]} → {metrics.test_period[1]} · data source: {metrics.data_source}</p>
             <div className="tablewrap">
               <table className="nowrap">
                 <thead><tr><th>Model</th><th>MAE</th><th>RMSE</th><th>R²</th><th>Acc.</th><th>F1</th><th>Poor+</th></tr></thead>
@@ -37,10 +37,36 @@ export default function About() {
                 </tbody>
               </table>
             </div>
-            <p className="muted">Persistence = "tomorrow will be like now". ✓ = model used in the app. Acc. = CPCB category accuracy, F1 = macro-F1, Poor+ = recall for Poor or worse days. MAE/RMSE in µg/m³; swipe the table sideways on a phone. LightGBM beats persistence but is only about as good as linear regression on this data.</p>
+            <p className="muted">Persistence = "tomorrow will be like now". ✓ = model used in the app. Acc. = CPCB category accuracy, F1 = macro-F1, Poor+ = recall for Poor or worse days. MAE/RMSE in µg/m³; swipe the table sideways on a phone.</p>
           </>
         )}
       </div>
+
+      {metrics && (
+        <div className="card">
+          <h3>Model experiments (LightGBM)</h3>
+          <p className="muted">Same rows and time-ordered split for every run. Chosen by validation MAE among the 24-hour-mean runs, because CPCB categories use 24-hour averages. MAE is only comparable within the same target.</p>
+          <div className="tablewrap">
+            <table className="nowrap">
+              <thead><tr><th>Target</th><th>Features</th><th>Val MAE</th><th>Test MAE</th><th>Acc.</th><th>Poor+</th></tr></thead>
+              <tbody>
+                {metrics.experiments.map((e) => {
+                  const chosen = e.target === metrics.model.target && e.future_weather === metrics.model.future_weather;
+                  return (
+                    <tr key={`${e.target}-${e.future_weather}`} style={chosen ? { fontWeight: 700 } : undefined}>
+                      <td>{e.target === "mean24" ? "24-h mean" : "t+24 h"}</td>
+                      <td>{e.future_weather ? "past + weather fc." : "past only"}{chosen ? " ✓" : ""}</td>
+                      <td>{e.val_mae.lightgbm}</td><td>{e.test.lightgbm.mae}</td>
+                      <td>{e.test.lightgbm.acc_cat}</td><td>{e.test.lightgbm.recall_poor_plus}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <p className="muted">Next-24 h weather: actual observed weather was used in training as a stand-in for a forecast; the live app uses the Open-Meteo forecast, which has errors, so real accuracy will be somewhat lower than these test scores.</p>
+        </div>
+      )}
 
       <div className="card">
         <h3>Data sources</h3>

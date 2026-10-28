@@ -43,9 +43,15 @@ export type User = { id: number; name: string; institution_id: number; instituti
 export type ModelScores = {
   mae: number; rmse: number; r2: number; acc_cat: number; macro_f1: number; recall_poor_plus: number;
 };
+export type Experiment = {
+  target: "t24" | "mean24"; future_weather: boolean;
+  val_mae: Record<"persistence" | "linear" | "lightgbm", number>;
+  test: Record<"persistence" | "linear" | "lightgbm", ModelScores>;
+};
 export type Metrics = {
   data_source: string; rows: number; test_period: [string, string]; best_iteration: number;
-  persistence: ModelScores; linear: ModelScores; lightgbm: ModelScores;
+  model: { kind: string; target: "t24" | "mean24"; future_weather: boolean; target_label: string };
+  persistence: ModelScores; linear: ModelScores; lightgbm: ModelScores; experiments: Experiment[];
 };
 export type Meta = { users: User[]; institutions: { id: number; name: string }[]; model_metrics: Metrics };
 export type LeaderRow = {

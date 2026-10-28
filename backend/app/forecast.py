@@ -35,11 +35,42 @@ def pm25_to_category(value: float) -> tuple[str, int, str]:
     return BANDS[-1][1:]
 
 
-def build_features(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
-    """Build the feature table X (data at time <= t only) and target y = pm25(t+24h).
+def future_weather(df: pd.DataFrame) -> pd.DataFrame:
+    """Weather over the NEXT 24 h (t+1 .. t+24): means, and the rain total.
 
-    df needs an hourly UTC DatetimeIndex and columns pm25, temp, rh, wind_speed, wind_dir, precip.
-    Rows with NaN are kept; the caller drops them for training or takes the last row for live use.
+    In training these are the actual observed values, used as a stand-in for a weather forecast.
+    At live inference they come from the Open-Meteo weather forecast. No future PM2.5 is used.
+    """
+    return pd.DataFrame({
+        "fut_temp_mean24": next24_mean(df["temp"]),
+        "fut_rh_mean24": next24_mean(df["rh"]),
+        "fut_wind_speed_mean24": next24_mean(df["wind_speed"]),
+        "fut_wind_dir_sin_mean24": next24_mean(np.sin(np.radians(df["wind_dir"]))),
+        "fut_wind_dir_cos_mean24": next24_mean(np.cos(np.radians(df["wind_dir"]))),
+        "fut_precip_sum24": df["precip"].rolling(HORIZON_H).sum().shift(-HORIZON_H),
+    }, index=df.index)
+
+
+def next24_mean(series: pd.Series) -> pd.Series:
+    """At each hour t, the mean of the series over t+1 .. t+24."""
+    return series.rolling(HORIZON_H).mean().shift(-HORIZON_H)
+
+
+def make_target(pm: pd.Series, target: str) -> pd.Series:
+    """Target y: "t24" = PM2.5 at t+24 h; "mean24" = mean PM2.5 over t+1 .. t+24 h."""
+    if target == "mean24":
+        return next24_mean(pm).rename("y")
+    return pm.shift(-HORIZON_H).rename("y")
+
+
+def build_features(df: pd.DataFrame, target: str = "t24",
+                   with_future_weather: bool = False) -> tuple[pd.DataFrame, pd.Series]:
+    """Build the feature table X and target y.
+
+    Past features use data at time <= t only. With with_future_weather=True, next-24 h weather
+    columns are added (see future_weather). df needs an hourly UTC DatetimeIndex and columns
+    pm25, temp, rh, wind_speed, wind_dir, precip. Rows with NaN are kept; the caller drops them
+    for training or picks the current-hour row for live use.
     """
     df = df.asfreq("h")
     pm = df["pm25"]
@@ -60,8 +91,9 @@ def build_features(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
     X["dow"] = local.dayofweek
     X["month"] = local.month
     X["is_winter"] = local.month.isin(WINTER_MONTHS).astype(int)
-    y = pm.shift(-HORIZON_H).rename("y")
-    return X, y
+    if with_future_weather:
+        X = X.join(future_weather(df))
+    return X, make_target(pm, target)
 
 
 
@@ -100,6 +132,17 @@ PHRASES = {
                           "हवा साफ़ दिशा से आ रही है")},
     "time": {"up": ("the usual daily pattern pushes it up", "दिन का सामान्य पैटर्न इसे बढ़ाता है"),
              "down": ("the usual daily pattern keeps it down", "दिन का सामान्य पैटर्न इसे घटाता है")},
+    # next-24 h weather forecast features
+    "fc_wind_speed": {"up": ("weak wind is forecast", "धीमी हवा का पूर्वानुमान है"),
+                      "down": ("strong wind is forecast", "तेज़ हवा का पूर्वानुमान है")},
+    "fc_rh": {"up": ("high humidity is forecast", "ज़्यादा नमी का पूर्वानुमान है"),
+              "down": ("low humidity is forecast", "कम नमी का पूर्वानुमान है")},
+    "fc_temp": {"up": ("a cold day is forecast", "ठंडे दिन का पूर्वानुमान है"),
+                "down": ("a warm day is forecast", "गर्म दिन का पूर्वानुमान है")},
+    "fc_precip": {"up": ("no rain is forecast", "बारिश का पूर्वानुमान नहीं है"),
+                  "down": ("rain is forecast", "बारिश का पूर्वानुमान है")},
+    "fc_wind_dir": {"up": ("wind is forecast from a polluted direction", "प्रदूषित दिशा से हवा का पूर्वानुमान है"),
+                    "down": ("wind is forecast from a cleaner direction", "साफ़ दिशा से हवा का पूर्वानुमान है")},
 }
 TIPS = {
     1: ("Good day to be outdoors. Keep windows open for fresh air.",
@@ -119,6 +162,10 @@ DISCLAIMER = ("This is general awareness, not medical advice.",
 
 def feature_group(name: str) -> str:
     """Map a feature name to its phrase group."""
+    if name.startswith("fut_"):
+        for key in ("wind_speed", "rh", "temp", "precip", "wind_dir"):
+            if name.startswith(f"fut_{key}"):
+                return f"fc_{key}"
     if name.startswith("pm25_"):
         return "pm25"
     if name in ("is_winter", "month"):
@@ -158,17 +205,20 @@ def make_reason(category: str, groups: list[str], high: bool, lang: str) -> str:
 @lru_cache(maxsize=1)
 def load_model() -> tuple[lgb.Booster, list[str], dict]:
     """Load the LightGBM booster, feature list and metrics once."""
+    metrics = json.loads((MODELS_DIR / "metrics.json").read_text())
+    # ponytail: live path supports LightGBM only; if a retrain ever picks "linear", add a linear explainer here
+    if metrics["model"]["kind"] != "lightgbm":
+        raise RuntimeError(f"live forecast supports LightGBM only, metrics.json says {metrics['model']['kind']}")
     booster = lgb.Booster(model_file=str(MODELS_DIR / "lgbm.txt"))
     features = json.loads((MODELS_DIR / "feature_list.json").read_text())
-    metrics = json.loads((MODELS_DIR / "metrics.json").read_text())
     return booster, features, metrics
 
 
 def fetch_hourly(url: str, lat: float, lon: float, fields: dict) -> pd.DataFrame:
-    """Fetch the last 3 days of hourly data from an Open-Meteo API as a UTC-indexed table."""
+    """Fetch the last 3 days + next 2 days of hourly data from an Open-Meteo API (UTC index)."""
     resp = requests.get(url, params={
         "latitude": lat, "longitude": lon, "hourly": ",".join(fields),
-        "past_days": 3, "forecast_days": 1, "timezone": "GMT",
+        "past_days": 3, "forecast_days": 2, "timezone": "GMT",
     }, timeout=30)
     resp.raise_for_status()
     hourly = resp.json()["hourly"]
@@ -178,20 +228,31 @@ def fetch_hourly(url: str, lat: float, lon: float, fields: dict) -> pd.DataFrame
 
 
 def fetch_live(lat: float, lon: float) -> pd.DataFrame:
-    """Last ~72 h of PM2.5 + weather up to the current hour (same source as training)."""
+    """Last ~72 h of PM2.5 + weather, plus the weather FORECAST for the next hours.
+
+    PM2.5 after the current hour is blanked: only past PM2.5 is ever used (same source as training).
+    """
     air = fetch_hourly(AIR_URL, lat, lon, {"pm2_5": "pm25"})
     weather = fetch_hourly(WEATHER_URL, lat, lon, WEATHER_FIELDS)
-    df = air.join(weather, how="inner")
+    df = weather.join(air, how="left")
     now = pd.Timestamp.now(tz="UTC").floor("h")
-    return df[df.index <= now].dropna(subset=["pm25"])
+    df.loc[df.index > now, "pm25"] = np.nan
+    return df
+
+
+def current_row(X: pd.DataFrame, live: pd.DataFrame) -> pd.DataFrame:
+    """The latest hour that has a measured PM2.5 and every feature filled in."""
+    ok = X.notna().all(axis=1) & live["pm25"].reindex(X.index).notna()
+    return X[ok].iloc[[-1]]
 
 
 def predict_core(lat: float, lon: float) -> dict:
-    """Predict tomorrow's PM2.5 and its SHAP reason groups for one location."""
+    """Predict tomorrow's PM2.5 (next-24 h mean for the current model) and its SHAP reason groups."""
     booster, features, metrics = load_model()
+    config = metrics["model"]
     live = fetch_live(lat, lon)
-    X, _ = build_features(live)
-    row = X[features].dropna().iloc[[-1]]
+    X, _ = build_features(live, target=config["target"], with_future_weather=config["future_weather"])
+    row = current_row(X[features], live)
     value = float(booster.predict(row)[0])
     shap_row = shap.TreeExplainer(booster).shap_values(row)[0]
     category, tier, colour = pm25_to_category(value)
@@ -200,8 +261,8 @@ def predict_core(lat: float, lon: float) -> dict:
         "pm25_now": round(float(live.loc[row.index[0], "pm25"]), 1), "pm25_tomorrow": round(value, 1), "category": category,
         "tier": tier, "color": colour, "high": high,
         "groups": top_reasons(shap_row, features, high), "test_mae": metrics["lightgbm"]["mae"],
+        "target": config["target_label"],
     }
-
 
 
 def get_forecast(lat: float, lon: float, lang: str = "en") -> dict:
@@ -220,5 +281,5 @@ def get_forecast(lat: float, lon: float, lang: str = "en") -> dict:
         "category": core["category"], "tier": core["tier"], "color": core["color"],
         "reason": make_reason(core["category"], core["groups"], core["high"], lang),
         "tip": TIPS[core["tier"]][idx], "disclaimer": DISCLAIMER[idx],
-        "model": {"name": "lightgbm", "test_mae": core["test_mae"]},
+        "model": {"name": "lightgbm", "test_mae": core["test_mae"], "target": core["target"]},
     }

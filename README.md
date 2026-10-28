@@ -77,15 +77,15 @@ Dev builds allow cleartext http to the laptop. For a build against an https back
 
 ## Model results (test set, real numbers from `backend/models/metrics.json`)
 
-Target: PM2.5 24 h ahead. 37,008 hourly rows, split 70/15/15 in time order. Test period: 2026-03-08 → 2026-10-25.
+Model used by `/forecast`: **LightGBM**. Target: mean PM2.5 over the next 24 h (CPCB bands use 24-h averages). Features: past PM2.5/weather plus next-24 h weather (the actual weather in training, the Open-Meteo forecast live). 37,008 hourly rows, split 70/15/15 in time order. Test period: 2026-03-08 → 2026-10-25.
 
 | Model | MAE | RMSE | R² | Category acc. | Macro-F1 | Recall Poor+ |
 |---|---|---|---|---|---|---|
-| Persistence | 33.66 | 50.44 | 0.169 | 0.409 | 0.364 | 0.716 |
-| Linear regression | 29.97 | 44.94 | 0.340 | 0.407 | 0.328 | 0.633 |
-| **LightGBM** | 30.02 | 44.16 | 0.363 | 0.399 | 0.335 | 0.681 |
+| Persistence | 24.33 | 35.99 | 0.404 | 0.486 | 0.441 | 0.755 |
+| Linear regression | 19.53 | 28.79 | 0.619 | 0.583 | 0.491 | 0.728 |
+| **LightGBM (used)** | 18.07 | 26.30 | 0.682 | 0.559 | 0.478 | 0.771 |
 
-LightGBM beats persistence by about 3.6 µg/m³ MAE, but it only ties linear regression (slightly better RMSE/R², slightly worse MAE). Plots are in `docs/evidence/`.
+The original model (PM2.5 at t+24 h, past features only) had LightGBM MAE 30.02, category accuracy 0.399 and Poor+ recall 0.681. It only tied linear regression. The full old-vs-new comparison and its caveats are in [docs/evidence/model_experiments.md](docs/evidence/model_experiments.md). Scores using next-24 h weather are optimistic, because training used the actual weather rather than a forecast. Plots are in `docs/evidence/` (old ones in `docs/evidence/model_v1/`).
 
 ## Limitations
 - **Modelled data:** PM2.5 comes from Open-Meteo/CAMS model output for a grid cell, not a ground station. History only starts in Aug 2022. No OpenWeather key was used.
