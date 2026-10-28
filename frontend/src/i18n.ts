@@ -20,6 +20,7 @@ const STRINGS = {
   goal: { en: "goal", hi: "लक्ष्य" },
   switchUser: { en: "Switch user", hi: "उपयोगकर्ता बदलें" },
   hello: { en: "Hello", hi: "नमस्ते" },
+  settings: { en: "Settings", hi: "सेटिंग्स" },
 } as const;
 
 export type StringKey = keyof typeof STRINGS;

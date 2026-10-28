@@ -11,6 +11,7 @@ import MapPage from "./pages/MapPage";
 import UserPicker from "./pages/UserPicker";
 import Admin from "./pages/Admin";
 import About from "./pages/About";
+import Settings from "./pages/Settings";
 
 /** Read the saved language (defaults to English). */
 function savedLang(): Lang {
@@ -40,6 +41,7 @@ export default function App() {
         <nav className="toplinks">
           <Link to="/about">{t(lang, "about")}</Link>
           <Link to="/admin">{t(lang, "admin")}</Link>
+          <Link to="/settings" aria-label={t(lang, "settings")} title={t(lang, "settings")}>⚙</Link>
         </nav>
       </header>
       {needsUser ? <UserPicker lang={lang} onPick={setUser} /> : (
@@ -50,6 +52,7 @@ export default function App() {
           <Route path="/map" element={<MapPage />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/about" element={<About />} />
+          <Route path="/settings" element={<Settings lang={lang} />} />
         </Routes>
       )}
       <nav className="bottomnav">

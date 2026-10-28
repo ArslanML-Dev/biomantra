@@ -1,5 +1,37 @@
-// Fetch helpers for the Bio Mantra backend (SPEC §9). Base URL comes from VITE_API_URL.
-export const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
+// Fetch helpers for the Bio Mantra backend (SPEC §9).
+import { Capacitor } from "@capacitor/core";
+
+const SERVER_KEY = "serverUrl";
+
+/** Backend URL: the one saved in Settings, else (laptop dev website) same host on port 8000, else VITE_API_URL. */
+export function apiUrl(): string {
+  const saved = localStorage.getItem(SERVER_KEY);
+  if (saved) return saved;
+  if (import.meta.env.DEV && !Capacitor.isNativePlatform()) return `${location.protocol}//${location.hostname}:8000`;
+  return (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
+}
+
+/** Clean up a typed server address: add http:// if missing, drop a trailing slash. */
+export function normalizeServerUrl(value: string): string {
+  const url = value.trim().replace(/\/+$/, "");
+  return /^https?:\/\//i.test(url) ? url : `http://${url}`;
+}
+
+/** Save a server URL on this device, or clear it (empty string) to use the default. */
+export function saveServerUrl(value: string): void {
+  if (value.trim()) localStorage.setItem(SERVER_KEY, normalizeServerUrl(value));
+  else localStorage.removeItem(SERVER_KEY);
+}
+
+/** True if GET {url}/health answers {"ok": true} within 5 s. */
+export async function testServer(url: string): Promise<boolean> {
+  try {
+    const resp = await fetch(`${normalizeServerUrl(url)}/health`, { signal: AbortSignal.timeout(5000) });
+    return resp.ok && (await resp.json()).ok === true;
+  } catch {
+    return false;
+  }
+}
 
 export type Lang = "en" | "hi";
 export type Forecast = {
@@ -32,7 +64,12 @@ export type ReviewItem = {
 
 /** Fetch JSON from the API; throw an Error with the server's message on failure. */
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const resp = await fetch(API_URL + path, init);
+  let resp: Response;
+  try {
+    resp = await fetch(apiUrl() + path, { ...init, signal: AbortSignal.timeout(60000) });
+  } catch {
+    throw new Error(`Cannot reach the server at ${apiUrl()}. Check Settings → Server URL and that the laptop is on the same Wi-Fi.`);
+  }
   if (!resp.ok) throw new Error(`${resp.status}: ${await resp.text()}`);
   return resp.json() as Promise<T>;
 }
@@ -53,4 +90,4 @@ export const api = {
 };
 
 /** Full URL for a backend upload path like /uploads/x.jpg. */
-export const uploadUrl = (path: string) => API_URL + path;
+export const uploadUrl = (path: string) => apiUrl() + path;

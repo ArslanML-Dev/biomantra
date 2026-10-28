@@ -1,5 +1,6 @@
 // First-launch "Who are you?" screen, listing users from /meta.
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { api, type Lang, type User } from "../api";
 import { t } from "../i18n";
 
@@ -14,7 +15,7 @@ export default function UserPicker({ lang, onPick }: { lang: Lang; onPick: (u: U
   return (
     <div className="card">
       <h2>{t(lang, "whoAreYou")}</h2>
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error">{error} <Link to="/settings">{t(lang, "settings")} →</Link></p>}
       {!users.length && !error && <p className="muted">{t(lang, "loading")}</p>}
       <ul className="list">
         {users.map((u) => (
