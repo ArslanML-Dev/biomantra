@@ -146,7 +146,7 @@
 ### [x] D3-T3 About page (SPEC §10.6)
 **Check:** it shows the real metrics from `models/metrics.json`, the data sources, the limitations and the disclaimers.
 
-### [ ] D3-T4 Deploy
+### [ ] D3-T4 Deploy — configs ready; WAITING FOR USER (accounts)
 **Build:** the backend on Render or ngrok, and the website on Vercel. The app points at the public backend URL; rebuild the APK.
 
 **Check:** the phone works on mobile data (not only Wi-Fi), and the website opens on another laptop.
