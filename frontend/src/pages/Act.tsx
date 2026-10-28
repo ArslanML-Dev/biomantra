@@ -14,6 +14,9 @@ const ACTIONS: { type: ActionType; en: string; hi: string }[] = [
   { type: "dumping_report", en: "⚠️ Report dumping", hi: "⚠️ कचरा फेंकने की रिपोर्ट" },
 ];
 
+// Points when approved (SPEC §8; backend scoring.py is the source of truth).
+const POINTS: Record<ActionType, number> = { sapling: 4, segregated_bin: 2, cleanup: 5, dumping_report: 2 };
+
 /** Open the camera (camera only, no gallery) and return the photo as a Blob. */
 async function takePhoto(): Promise<Blob> {
   const photo = await Camera.getPhoto({ source: CameraSource.Camera, resultType: CameraResultType.Uri, quality: 80 });
@@ -32,7 +35,13 @@ export default function Act({ lang, user }: { lang: Lang; user: User }) {
     return (
       <div className="card">
         <h2>{hi ? "कदम उठाएँ" : "Take action"}</h2>
-        <p>{hi ? "कार्य केवल Bio Mantra ऐप से ही जमा किए जा सकते हैं।" : "Actions can only be submitted from the Bio Mantra app."}</p>
+        <p><strong>{hi ? "कार्य केवल Bio Mantra ऐप से ही जमा किए जा सकते हैं।" : "Actions can only be submitted from the Bio Mantra app."}</strong></p>
+        <p className="muted">{hi ? "ऐप में लाइव कैमरा फ़ोटो + GPS से:" : "In the app, with a live camera photo + GPS:"}</p>
+        <ul className="list">
+          {ACTIONS.map((a) => (
+            <li key={a.type} className="spread"><span>{hi ? a.hi : a.en}</span><strong>+{POINTS[a.type]}</strong></li>
+          ))}
+        </ul>
       </div>
     );
   }

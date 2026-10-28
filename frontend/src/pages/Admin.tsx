@@ -2,6 +2,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, uploadUrl, type ReviewItem } from "../api";
 
+// COCO classes the AI check uses for each action type (highlighted in the detection list).
+const LITTER = ["bottle", "cup", "bowl", "wine glass", "fork", "knife", "spoon"];
+const KEY_CLASSES: Record<string, string[]> = {
+  sapling: ["potted plant"], segregated_bin: LITTER, cleanup: LITTER, dumping_report: LITTER,
+};
+
 export default function Admin() {
   const [token, setToken] = useState(() => sessionStorage.getItem("adminToken") ?? "");
   const [draft, setDraft] = useState("");
@@ -38,10 +44,10 @@ export default function Admin() {
 
   return (
     <>
-      <div className="spread" style={{ marginBottom: 12 }}>
-        <h2 style={{ margin: 0 }}>Review queue ({queue?.length ?? "…"})</h2>
+      <div className="adminhead">
+        <h2>Review queue ({queue?.length ?? "…"})</h2>
         <div className="row">
-          <input style={{ width: 180 }} value={reviewer} onChange={(e) => setReviewer(e.target.value)} aria-label="Reviewer name" />
+          <input value={reviewer} onChange={(e) => setReviewer(e.target.value)} aria-label="Reviewer name" placeholder="Reviewer name" />
           <button className="btn ghost" onClick={load}>Refresh</button>
         </div>
       </div>
@@ -54,8 +60,12 @@ export default function Admin() {
             {item.before_photo_url && <><div className="muted">Before</div><img className="photo" src={uploadUrl(item.before_photo_url)} alt="before" /></>}
             {item.before_photo_url && <div className="muted">After</div>}
             <img className="photo" src={uploadUrl(item.photo_url)} alt="submitted" />
-            <p className="muted">AI confidence {item.confidence?.toFixed(2)} · {new Date(item.server_time).toLocaleString()}</p>
-            <ul>{item.detections.map((d, i) => <li key={i}>{d.name} ({d.conf.toFixed(2)})</li>)}</ul>
+            <p className="muted">AI confidence <strong>{item.confidence?.toFixed(2)}</strong> · {new Date(item.server_time).toLocaleString()}</p>
+            <ul className="tags">
+              {item.detections.map((d, i) => (
+                <li key={i} className={KEY_CLASSES[item.action_type]?.includes(d.name) ? "key" : ""}>{d.name} {d.conf.toFixed(2)}</li>
+              ))}
+            </ul>
             <div className="row">
               <button className="btn lime" onClick={() => decide(item.id, "approve")}>Approve</button>
               <button className="btn" onClick={() => decide(item.id, "reject")}>Reject</button>

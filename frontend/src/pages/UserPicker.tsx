@@ -17,7 +17,7 @@ export default function UserPicker({ lang, onPick }: { lang: Lang; onPick: (u: U
       <h2>{t(lang, "whoAreYou")}</h2>
       {error && <p className="error">{error} <Link to="/settings">{t(lang, "settings")} →</Link></p>}
       {!users.length && !error && <p className="muted">{t(lang, "loading")}</p>}
-      <ul className="list">
+      <ul className="list plain">
         {users.map((u) => (
           <li key={u.id}>
             <button className="btn ghost" style={{ width: "100%" }} onClick={() => onPick(u)}>

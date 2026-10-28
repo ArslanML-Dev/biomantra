@@ -25,5 +25,14 @@ const STRINGS = {
 
 export type StringKey = keyof typeof STRINGS;
 
+const CATEGORY_HI: Record<string, string> = {
+  Good: "अच्छी", Satisfactory: "संतोषजनक", "Moderately polluted": "मध्यम प्रदूषित",
+  Poor: "खराब", "Very poor": "बहुत खराब", Severe: "गंभीर",
+};
+
+/** CPCB category name in the chosen language (the backend sends English). */
+export const categoryName = (lang: Lang, category: string): string =>
+  lang === "hi" ? CATEGORY_HI[category] ?? category : category;
+
 /** Look up a UI string in the chosen language. */
 export const t = (lang: Lang, key: StringKey): string => STRINGS[key][lang];

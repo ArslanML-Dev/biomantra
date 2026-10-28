@@ -56,10 +56,10 @@ export default function App() {
         </Routes>
       )}
       <nav className="bottomnav">
-        <NavLink to="/" end>{t(lang, "home")}</NavLink>
-        <NavLink to="/act">{t(lang, "act")}</NavLink>
-        <NavLink to="/leaderboard">{t(lang, "leaderboard")}</NavLink>
-        <NavLink to="/map">{t(lang, "map")}</NavLink>
+        <NavLink to="/" end><span className="ico" aria-hidden>🏠</span>{t(lang, "home")}</NavLink>
+        <NavLink to="/act"><span className="ico" aria-hidden>📷</span>{t(lang, "act")}</NavLink>
+        <NavLink to="/leaderboard"><span className="ico" aria-hidden>🏆</span>{t(lang, "leaderboard")}</NavLink>
+        <NavLink to="/map"><span className="ico" aria-hidden>🗺️</span>{t(lang, "map")}</NavLink>
       </nav>
     </div>
   );

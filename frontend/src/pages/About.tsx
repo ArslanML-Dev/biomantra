@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { api, type Metrics } from "../api";
 
-const MODELS = [["persistence", "Persistence (tomorrow = now)"], ["linear", "Linear regression"], ["lightgbm", "LightGBM (used)"]] as const;
+const MODELS = [["persistence", "Persistence"], ["linear", "Linear"], ["lightgbm", "LightGBM ✓"]] as const;
 
 export default function About() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
@@ -27,8 +27,8 @@ export default function About() {
           <>
             <p className="muted">Target: PM2.5 24 h ahead · {metrics.rows.toLocaleString()} hourly rows · test period {metrics.test_period[0]} → {metrics.test_period[1]} · data source: {metrics.data_source}</p>
             <div className="tablewrap">
-              <table>
-                <thead><tr><th>Model</th><th>MAE</th><th>RMSE</th><th>R²</th><th>Category acc.</th><th>Macro-F1</th><th>Recall Poor+</th></tr></thead>
+              <table className="nowrap">
+                <thead><tr><th>Model</th><th>MAE</th><th>RMSE</th><th>R²</th><th>Acc.</th><th>F1</th><th>Poor+</th></tr></thead>
                 <tbody>
                   {MODELS.map(([key, label]) => {
                     const m = metrics[key];
@@ -37,7 +37,7 @@ export default function About() {
                 </tbody>
               </table>
             </div>
-            <p className="muted">MAE/RMSE in µg/m³. LightGBM beats persistence but is only about as good as linear regression on this data.</p>
+            <p className="muted">Persistence = "tomorrow will be like now". ✓ = model used in the app. Acc. = CPCB category accuracy, F1 = macro-F1, Poor+ = recall for Poor or worse days. MAE/RMSE in µg/m³; swipe the table sideways on a phone. LightGBM beats persistence but is only about as good as linear regression on this data.</p>
           </>
         )}
       </div>
