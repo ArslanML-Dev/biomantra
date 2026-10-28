@@ -111,7 +111,7 @@
 
 **Check:** `npm run dev -- --host` opens on the laptop and on the phone browser via the LAN IP.
 
-### [ ] D2-T2 User picker + Home screen (SPEC §10.1)
+### [x] D2-T2 User picker + Home screen (SPEC §10.1)
 **Check:** the forecast card shows real data from the backend, and the EN/हिं toggle works. Take a screenshot to `docs/evidence/screens/`.
 
 ### [ ] D2-T3 Leaderboard screen
