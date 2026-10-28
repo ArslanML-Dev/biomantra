@@ -2,6 +2,8 @@
 
 Everything that could be built and checked on the laptop without a phone, accounts or a browser is done and committed. This file lists what works, what didn't, and every step left for you, in order.
 
+> **Update 2026-10-29:** the quickest path is now [DEMO.md](DEMO.md): `start_demo.ps1` starts everything and prints the phone addresses, and the app has a ⚙ Settings page for the Server URL, so no rebuild is needed when the IP changes. Screenshots of every page are in `docs/evidence/screens/`.
+
 ---
 
 ## 1. What works (real, checked results)

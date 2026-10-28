@@ -27,6 +27,8 @@ It's a 3-day B.Tech CSE (Data Science) mini-project prototype: one FastAPI backe
 
 ## Setup and running
 
+**Quick demo on the laptop + phone:** `powershell -ExecutionPolicy Bypass -File .\start_demo.ps1` (see [docs/DEMO.md](docs/DEMO.md)). The app has a Settings page (⚙) for the Server URL.
+
 Requirements: Python 3.11, Node.js 20+, Git. For the APK you also need Android Studio, opened once so it installs the Android SDK.
 
 ### Backend
