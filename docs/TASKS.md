@@ -137,7 +137,7 @@
 
 ## Day 3: website, admin, deploy and testing
 
-### [ ] D3-T1 Map page (SPEC §10.4)
+### [x] D3-T1 Map page (SPEC §10.4)
 **Check:** a dumping report approved via admin appears as a hotspot. A verified cleanup within 150 m closes it.
 
 ### [ ] D3-T2 Admin page (SPEC §10.5)
