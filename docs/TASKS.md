@@ -140,7 +140,7 @@
 ### [x] D3-T1 Map page (SPEC §10.4)
 **Check:** a dumping report approved via admin appears as a hotspot. A verified cleanup within 150 m closes it.
 
-### [ ] D3-T2 Admin page (SPEC §10.5)
+### [x] D3-T2 Admin page (SPEC §10.5)
 **Check:** a `needs_review` action can be approved, and its points appear on the leaderboard.
 
 ### [ ] D3-T3 About page (SPEC §10.6)

@@ -9,6 +9,7 @@ import Act from "./pages/Act";
 import Leaderboard from "./pages/Leaderboard";
 import MapPage from "./pages/MapPage";
 import UserPicker from "./pages/UserPicker";
+import Admin from "./pages/Admin";
 
 /** Read the saved language (defaults to English). */
 function savedLang(): Lang {
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/act" element={<Act lang={lang} user={user!} />} />
           <Route path="/leaderboard" element={<Leaderboard lang={lang} />} />
           <Route path="/map" element={<MapPage />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       )}
       <nav className="bottomnav">
