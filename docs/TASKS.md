@@ -58,7 +58,7 @@
 
 **Check:** print the metrics table for all 3 models on the test set. LightGBM should beat persistence on MAE. If it doesn't, report that honestly and suggest one change; don't hide it.
 
-### [ ] D1-T6 Forecast tests
+### [x] D1-T6 Forecast tests
 **Build:** `tests/test_forecast.py` (SPEC §12): a no-future-leakage test and the band-edge tests.
 
 **Check:** `pytest -q tests/test_forecast.py` passes.
