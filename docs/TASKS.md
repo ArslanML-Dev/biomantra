@@ -143,7 +143,7 @@
 ### [x] D3-T2 Admin page (SPEC §10.5)
 **Check:** a `needs_review` action can be approved, and its points appear on the leaderboard.
 
-### [ ] D3-T3 About page (SPEC §10.6)
+### [x] D3-T3 About page (SPEC §10.6)
 **Check:** it shows the real metrics from `models/metrics.json`, the data sources, the limitations and the disclaimers.
 
 ### [ ] D3-T4 Deploy
