@@ -14,14 +14,15 @@ export default function UserPicker({ lang, onPick }: { lang: Lang; onPick: (u: U
 
   return (
     <div className="card">
+      <div className="eyebrow">{lang === "hi" ? "स्वागत है" : "Welcome"}</div>
       <h2>{t(lang, "whoAreYou")}</h2>
       {error && <p className="error">{error} <Link to="/settings">{t(lang, "settings")} →</Link></p>}
       {!users.length && !error && <p className="muted">{t(lang, "loading")}</p>}
       <ul className="list plain">
         {users.map((u) => (
           <li key={u.id}>
-            <button className="btn ghost" style={{ width: "100%" }} onClick={() => onPick(u)}>
-              {u.name} · {u.institution}
+            <button className="person" onClick={() => onPick(u)}>
+              <span className="n">{u.name}</span><span className="i">{u.institution}</span>
             </button>
           </li>
         ))}

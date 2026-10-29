@@ -18,6 +18,7 @@ export default function Leaderboard({ lang }: { lang: Lang }) {
 
   return (
     <div className="card">
+      <div className="eyebrow">{t(lang, "thisWeek")} · {t(lang, "goal")} 50</div>
       <h2>{t(lang, "leaderboard")}</h2>
       <div className="tabs">
         <button className={scope === "institutions" ? "on" : ""} onClick={() => setScope("institutions")}>{t(lang, "institutions")}</button>
@@ -29,13 +30,15 @@ export default function Leaderboard({ lang }: { lang: Lang }) {
         {rows?.map((r) => (
           <li key={r.id}>
             <div className="spread">
-              <strong>#{r.rank} {r.name}</strong>
-              <span>{r.points_week} {t(lang, "thisWeek")} · {r.points_total} {t(lang, "total")}</span>
+              <span className="who"><span className={r.rank <= 3 ? "rank top" : "rank"}>{r.rank}</span><strong>{r.name}</strong></span>
+              <span className="pts"><b>{r.points_week}</b>{t(lang, "thisWeek")} · {r.points_total} {t(lang, "total")}</span>
             </div>
             <div className="bar" title={`${Math.round(r.progress * 100)}%`}>
               <div style={{ width: `${r.progress * 100}%` }} />
             </div>
-            <div className="muted">{r.points_week} / {r.goal} {t(lang, "goal")} ({Math.round(r.progress * 100)}%)</div>
+            <div className="muted" style={{ marginTop: 6, fontSize: "0.74rem" }}>
+              {r.points_week} / {r.goal} {t(lang, "goal")} · {Math.round(r.progress * 100)}%
+            </div>
           </li>
         ))}
       </ol>

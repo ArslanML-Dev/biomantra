@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api, type Forecast, type Lang, type User } from "../api";
 import { categoryName, t } from "../i18n";
+import { ArrowIcon } from "../icons";
 
 type Props = { lang: Lang; setLang: (l: Lang) => void; user: User | null; onSwitchUser: () => void };
 
@@ -17,7 +18,7 @@ export default function Home({ lang, setLang, user, onSwitchUser }: Props) {
 
   return (
     <>
-      <div className="spread" style={{ marginBottom: 12 }}>
+      <div className="spread" style={{ margin: "4px 0 16px" }}>
         <span className="muted greet">
           {user && <><span>{t(lang, "hello")}, <strong>{user.name}</strong></span>
             <button className="linkbtn" onClick={onSwitchUser}>{t(lang, "switchUser")}</button></>}
@@ -29,26 +30,29 @@ export default function Home({ lang, setLang, user, onSwitchUser }: Props) {
       </div>
 
       <div className="card forecast" style={forecast ? ({ "--cat": forecast.color } as React.CSSProperties) : undefined}>
+        <div className="eyebrow">{t(lang, "tomorrow")}</div>
         {error && <p className="error">{error}</p>}
         {!forecast && !error && <p className="muted">{t(lang, "loading")}</p>}
         {forecast && (
           <>
-            <div className="muted">{t(lang, "tomorrow")}</div>
-            <div className="big">{forecast.pm25_tomorrow.toFixed(0)}</div>
-            <span className="chip" style={{ background: forecast.color }}>{categoryName(lang, forecast.category)}</span>
-            <span className="muted" style={{ marginLeft: 10 }}>{t(lang, "now")}: {forecast.pm25_now.toFixed(0)}</span>
-            <p><strong>{forecast.reason}</strong></p>
-            <p>{forecast.tip}</p>
-            <p className="muted"><em>{forecast.disclaimer}</em></p>
-            <p className="muted" style={{ fontSize: "0.75rem" }}>
-              LightGBM · test MAE {forecast.model.test_mae} µg/m³ · {new Date(forecast.generated_at).toLocaleString()}
+            <div className="big">{forecast.pm25_tomorrow.toFixed(0)}<small>µg/m³</small></div>
+            <span className="chip"><span className="dot" />{categoryName(lang, forecast.category)}</span>
+            <div className="stats">
+              <div className="stat"><div className="v">{forecast.pm25_now.toFixed(0)}</div><div className="k">{t(lang, "now")}</div></div>
+              <div className="stat"><div className="v">±{forecast.model.test_mae.toFixed(0)}</div><div className="k">{t(lang, "typicalError")}</div></div>
+            </div>
+            <hr className="rule" />
+            <p className="reason">{forecast.reason}</p>
+            <p className="tip">{forecast.tip}</p>
+            <p className="fineprint">
+              {forecast.disclaimer} · LightGBM · {new Date(forecast.generated_at).toLocaleString()}
             </p>
           </>
         )}
       </div>
 
       <div className="row">
-        <Link to="/act" className="btn lime">{t(lang, "takeAction")}</Link>
+        <Link to="/act" className="btn gold">{t(lang, "takeAction")} <ArrowIcon /></Link>
         <Link to="/leaderboard" className="btn">{t(lang, "leaderboard")}</Link>
       </div>
     </>

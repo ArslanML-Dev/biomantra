@@ -8,7 +8,7 @@ const STRINGS = {
   map: { en: "Map", hi: "नक्शा" },
   about: { en: "About", hi: "जानकारी" },
   admin: { en: "Admin", hi: "एडमिन" },
-  tomorrow: { en: "PM2.5 next 24 h, average (µg/m³)", hi: "अगले 24 घंटे का औसत PM2.5 (µg/m³)" },
+  tomorrow: { en: "Tomorrow · PM2.5, 24-hour average", hi: "कल · PM2.5, 24 घंटे का औसत" },
   now: { en: "Now", hi: "अभी" },
   takeAction: { en: "Take action", hi: "कदम उठाएँ" },
   whoAreYou: { en: "Who are you?", hi: "आप कौन हैं?" },
@@ -21,6 +21,8 @@ const STRINGS = {
   switchUser: { en: "Switch user", hi: "उपयोगकर्ता बदलें" },
   hello: { en: "Hello", hi: "नमस्ते" },
   settings: { en: "Settings", hi: "सेटिंग्स" },
+  typicalError: { en: "Typical error", hi: "सामान्य त्रुटि" },
+  liveOnly: { en: "Live camera only · time and location are verified", hi: "केवल लाइव कैमरा · समय और स्थान की जाँच होती है" },
 } as const;
 
 export type StringKey = keyof typeof STRINGS;
