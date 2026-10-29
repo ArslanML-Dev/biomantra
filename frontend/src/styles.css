@@ -205,9 +205,19 @@ strong { color: var(--ivory); font-weight: 600; }
 .bigbtn .t { font-family: var(--serif); font-size: 1.15rem; color: var(--ivory); line-height: 1.2; }
 .bigbtn .p { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--gold); }
 .bigbtn.on { border-color: var(--gold); background: linear-gradient(160deg, rgba(212, 180, 122, 0.16), rgba(212, 180, 122, 0.02)); box-shadow: 0 0 0 1px var(--gold) inset; }
-.camera { margin-top: 18px; border-radius: 18px; overflow: hidden; border: 1px solid var(--line-strong); background: #000; }
-.camera video { display: block; width: 100%; max-height: 60vh; object-fit: cover; }
-.camera .row { padding: 12px; background: rgba(0, 0, 0, 0.55); }
+/* full-screen live camera (website); sits above the floating nav */
+.camera {
+  position: fixed; inset: 0; z-index: 1200; background: #000;
+  display: flex; flex-direction: column; justify-content: center;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.camera video { display: block; width: 100%; height: 100%; object-fit: cover; min-height: 0; flex: 1; }
+.camera .row {
+  position: absolute; left: 0; right: 0; bottom: 0; flex-wrap: nowrap;
+  padding: 18px 18px calc(22px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.85), transparent);
+}
+.camera .error { color: var(--ivory); text-align: center; }
 .status { display: inline-block; font-weight: 600; padding: 6px 14px; border-radius: 999px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.18em; border: 1px solid; }
 .status.approved { color: var(--good); border-color: rgba(143, 211, 176, 0.4); background: rgba(143, 211, 176, 0.08); }
 .status.needs_review { color: var(--warn); border-color: rgba(233, 196, 106, 0.4); background: rgba(233, 196, 106, 0.08); }
