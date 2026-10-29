@@ -12,7 +12,7 @@ from typing import AsyncIterator, Literal
 from fastapi import FastAPI, File, Form, Header, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from PIL import Image, UnidentifiedImageError
+from PIL import Image, ImageOps, UnidentifiedImageError
 from pydantic import BaseModel
 
 from app import scoring, verify
@@ -23,6 +23,7 @@ from app.forecast import get_forecast, load_model
 UPLOADS_DIR = Path(os.getenv("BIOMANTRA_UPLOADS", BACKEND_DIR / "uploads"))
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 ACTION_TYPES = set(scoring.POINTS)
+MAX_UPLOAD_BYTES = 15 * 1024 * 1024  # a 12 MP phone JPEG at quality 80 is about 3-5 MB
 
 
 @asynccontextmanager
@@ -84,11 +85,16 @@ def parse_client_time(value: str) -> datetime:
 
 
 async def read_image(upload: UploadFile) -> Image.Image:
-    """Read an uploaded file as an RGB image, or fail with 400."""
+    """Read an uploaded file as an upright RGB image, or fail with 400 (not an image) / 413 (too big)."""
+    data = await upload.read(MAX_UPLOAD_BYTES + 1)
+    if len(data) > MAX_UPLOAD_BYTES:
+        raise HTTPException(413, f"photo is larger than {MAX_UPLOAD_BYTES // (1024 * 1024)} MB")
     try:
-        return Image.open(io.BytesIO(await upload.read())).convert("RGB")
+        image = Image.open(io.BytesIO(data))
     except UnidentifiedImageError as err:
         raise HTTPException(400, f"{upload.filename or 'file'} is not an image") from err
+    # Phone cameras store sideways pixels plus an EXIF rotation tag; apply it so YOLO sees the photo upright.
+    return ImageOps.exif_transpose(image).convert("RGB")
 
 
 def save_image(image: Image.Image) -> str:

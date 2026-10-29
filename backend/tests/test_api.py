@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from PIL import Image
 
 from app import main, verify
 from app.config import settings
@@ -114,3 +115,27 @@ def test_cleanup_without_before_photo_is_400(client: TestClient) -> None:
                                          "lon": settings.LON, "client_time": datetime.now(timezone.utc).isoformat()},
                        files={"photo": ("p.jpg", jpeg_bytes(41), "image/jpeg")})
     assert resp.status_code == 400
+
+
+def test_phone_photo_exif_rotation_is_applied(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A sideways-stored phone JPEG with EXIF orientation 6 reaches YOLO upright (portrait)."""
+    seen = {}
+    monkeypatch.setattr(verify, "detect", lambda image: seen.setdefault("size", image.size) and PLANT)
+    exif = Image.Exif()
+    exif[0x0112] = 6  # Orientation: rotate 90° clockwise to display
+    buf = io.BytesIO()
+    make_image(3).resize((400, 200)).save(buf, "JPEG", exif=exif)
+    data = {"user_id": 1, "action_type": "sapling", "lat": settings.LAT, "lon": settings.LON,
+            "client_time": datetime.now(timezone.utc).isoformat()}
+    resp = client.post("/actions", data=data, files={"photo": ("p.jpg", buf.getvalue(), "image/jpeg")})
+    assert resp.status_code == 200, resp.text
+    assert seen["size"] == (200, 400)
+
+
+def test_too_large_upload_is_413(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Uploads above the size limit are refused before decoding."""
+    monkeypatch.setattr(main, "MAX_UPLOAD_BYTES", 1000)
+    data = {"user_id": 1, "action_type": "sapling", "lat": settings.LAT, "lon": settings.LON,
+            "client_time": datetime.now(timezone.utc).isoformat()}
+    resp = client.post("/actions", data=data, files={"photo": ("p.jpg", jpeg_bytes(4), "image/jpeg")})
+    assert resp.status_code == 413
