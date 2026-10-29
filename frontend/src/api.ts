@@ -53,7 +53,10 @@ export type Metrics = {
   model: { kind: string; target: "t24" | "mean24"; future_weather: boolean; target_label: string };
   persistence: ModelScores; linear: ModelScores; lightgbm: ModelScores; experiments: Experiment[];
 };
-export type Meta = { users: User[]; institutions: { id: number; name: string }[]; model_metrics: Metrics };
+export type Meta = {
+  users: User[]; institutions: { id: number; name: string }[]; model_metrics: Metrics;
+  location: { lat: number; lon: number };
+};
 export type LeaderRow = {
   rank: number; id: number; name: string; points_total: number; points_week: number; goal: number; progress: number;
 };
@@ -80,8 +83,33 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return resp.json() as Promise<T>;
 }
 
+const WEATHER_FIELDS = "temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,precipitation";
+
+/** Fetch the weather from Open-Meteo on this device: free hosting shares one server IP, which Open-Meteo rate-limits. */
+async function deviceWeather(lat: number, lon: number): Promise<unknown> {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=${WEATHER_FIELDS}` +
+    "&past_days=3&forecast_days=2&timezone=GMT";
+  const resp = await fetch(url, { signal: AbortSignal.timeout(20000) });
+  if (!resp.ok) throw new Error(`Open-Meteo ${resp.status}`);
+  return (await resp.json()).hourly;
+}
+
+/** Forecast using weather fetched on this device; if that fails, let the server fetch the weather itself. */
+async function forecast(lang: Lang): Promise<Forecast> {
+  try {
+    const { location } = await request<Meta>("/meta");
+    const weather = await deviceWeather(location.lat, location.lon);
+    return await request<Forecast>("/forecast", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lat: location.lat, lon: location.lon, lang, weather }),
+    });
+  } catch {
+    return request<Forecast>(`/forecast?lang=${lang}`);
+  }
+}
+
 export const api = {
-  forecast: (lang: Lang) => request<Forecast>(`/forecast?lang=${lang}`),
+  forecast,
   meta: () => request<Meta>("/meta"),
   leaderboard: (scope: "users" | "institutions") => request<LeaderRow[]>(`/leaderboard?scope=${scope}`),
   hotspots: () => request<Hotspot[]>("/hotspots"),

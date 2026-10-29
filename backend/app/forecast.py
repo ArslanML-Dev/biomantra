@@ -106,6 +106,7 @@ WEATHER_FIELDS = {
 }
 CACHE_SECONDS = 30 * 60
 _cache: dict[tuple, tuple[float, dict]] = {}
+_air_cache: dict[tuple, tuple[float, pd.DataFrame]] = {}
 
 CATEGORY_HI = {
     "Good": "अच्छी", "Satisfactory": "संतोषजनक", "Moderately polluted": "मध्यम प्रदूषित",
@@ -213,6 +214,13 @@ def load_model() -> tuple[lgb.Booster, list[str], dict]:
     return booster, features, metrics
 
 
+def hourly_frame(hourly: dict, fields: dict) -> pd.DataFrame:
+    """Open-Meteo "hourly" JSON block -> table with our column names and a UTC hourly index."""
+    df = pd.DataFrame({new: hourly[old] for old, new in fields.items()}, dtype=float)
+    df.index = pd.to_datetime(hourly["time"], utc=True)
+    return df
+
+
 def fetch_hourly(url: str, lat: float, lon: float, fields: dict) -> pd.DataFrame:
     """Fetch the last 3 days + next 2 days of hourly data from an Open-Meteo API (UTC index)."""
     resp = requests.get(url, params={
@@ -220,19 +228,29 @@ def fetch_hourly(url: str, lat: float, lon: float, fields: dict) -> pd.DataFrame
         "past_days": 3, "forecast_days": 2, "timezone": "GMT",
     }, timeout=30)
     resp.raise_for_status()
-    hourly = resp.json()["hourly"]
-    df = pd.DataFrame({new: hourly[old] for old, new in fields.items()})
-    df.index = pd.to_datetime(hourly["time"], utc=True)
-    return df
+    return hourly_frame(resp.json()["hourly"], fields)
 
 
-def fetch_live(lat: float, lon: float) -> pd.DataFrame:
+def fetch_air(lat: float, lon: float) -> pd.DataFrame:
+    """Hourly PM2.5 from Open-Meteo, cached 30 min per location (keeps the server far below rate limits)."""
+    key = (round(lat, 2), round(lon, 2))
+    cached = _air_cache.get(key)
+    if cached is None or time.time() - cached[0] > CACHE_SECONDS:
+        cached = (time.time(), fetch_hourly(AIR_URL, lat, lon, {"pm2_5": "pm25"}))
+        _air_cache[key] = cached
+    return cached[1]
+
+
+def fetch_live(lat: float, lon: float, weather_hourly: dict | None = None) -> pd.DataFrame:
     """Last ~72 h of PM2.5 + weather, plus the weather FORECAST for the next hours.
 
+    weather_hourly: Open-Meteo weather sent by the phone/browser (the server's shared IP on free hosting
+    can be rate-limited by Open-Meteo); when None, the server fetches the weather itself.
     PM2.5 after the current hour is blanked: only past PM2.5 is ever used (same source as training).
     """
-    air = fetch_hourly(AIR_URL, lat, lon, {"pm2_5": "pm25"})
-    weather = fetch_hourly(WEATHER_URL, lat, lon, WEATHER_FIELDS)
+    air = fetch_air(lat, lon)
+    weather = (hourly_frame(weather_hourly, WEATHER_FIELDS) if weather_hourly is not None
+               else fetch_hourly(WEATHER_URL, lat, lon, WEATHER_FIELDS))
     df = weather.join(air, how="left")
     now = pd.Timestamp.now(tz="UTC").floor("h")
     df.loc[df.index > now, "pm25"] = np.nan
@@ -245,11 +263,11 @@ def current_row(X: pd.DataFrame, live: pd.DataFrame) -> pd.DataFrame:
     return X[ok].iloc[[-1]]
 
 
-def predict_core(lat: float, lon: float) -> dict:
+def predict_core(lat: float, lon: float, weather_hourly: dict | None = None) -> dict:
     """Predict tomorrow's PM2.5 (next-24 h mean for the current model) and its SHAP reason groups."""
     booster, features, metrics = load_model()
     config = metrics["model"]
-    live = fetch_live(lat, lon)
+    live = fetch_live(lat, lon, weather_hourly)
     X, _ = build_features(live, target=config["target"], with_future_weather=config["future_weather"])
     row = current_row(X[features], live)
     value = float(booster.predict(row)[0])
@@ -265,14 +283,18 @@ def predict_core(lat: float, lon: float) -> dict:
     }
 
 
-def get_forecast(lat: float, lon: float, lang: str = "en") -> dict:
-    """Full /forecast response, with the model result cached for 30 minutes per location."""
-    key = (round(lat, 2), round(lon, 2))
-    cached = _cache.get(key)
-    if cached is None or time.time() - cached[0] > CACHE_SECONDS:
-        cached = (time.time(), predict_core(lat, lon))
-        _cache[key] = cached
-    generated_at, core = cached
+def get_forecast(lat: float, lon: float, lang: str = "en", weather_hourly: dict | None = None) -> dict:
+    """Full /forecast response. Server-fetched results are cached 30 min per location; results made from
+    device-sent weather are not cached, so one client's data never changes what others see."""
+    if weather_hourly is not None:
+        generated_at, core = time.time(), predict_core(lat, lon, weather_hourly)
+    else:
+        key = (round(lat, 2), round(lon, 2))
+        cached = _cache.get(key)
+        if cached is None or time.time() - cached[0] > CACHE_SECONDS:
+            cached = (time.time(), predict_core(lat, lon))
+            _cache[key] = cached
+        generated_at, core = cached
     idx = 1 if lang == "hi" else 0
     return {
         "location": {"lat": lat, "lon": lon},

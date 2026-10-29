@@ -1,11 +1,12 @@
 """Bio Mantra FastAPI app: forecast, actions, leaderboard, hotspots and admin (SPEC §9)."""
 import io
 import json
+import math
 import os
 import secrets
 import uuid
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import AsyncIterator, Literal
 
@@ -13,7 +14,7 @@ from fastapi import FastAPI, File, Form, Header, HTTPException, Query, UploadFil
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, ImageOps, UnidentifiedImageError
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, model_validator
 
 from app import scoring, verify
 from app.config import settings
@@ -50,6 +51,48 @@ class ReviewDecision(BaseModel):
     reviewer: str
 
 
+# allowed range per Open-Meteo weather field (units as the API returns them: °C, %, km/h, degrees, mm)
+WEATHER_LIMITS = {"temperature_2m": (-60, 60), "relative_humidity_2m": (0, 100), "wind_speed_10m": (0, 300),
+                  "wind_direction_10m": (0, 360), "precipitation": (0, 500)}
+
+
+class DeviceWeather(BaseModel):
+    """Open-Meteo hourly weather block fetched by the phone/browser (same request the server would make)."""
+
+    time: list[str] = Field(min_length=48, max_length=24 * 8)
+    temperature_2m: list[float | None]
+    relative_humidity_2m: list[float | None]
+    wind_speed_10m: list[float | None]
+    wind_direction_10m: list[float | None]
+    precipitation: list[float | None]
+
+    @model_validator(mode="after")
+    def check_values(self) -> "DeviceWeather":
+        """Same length as `time`, plausible finite values, and strictly increasing hourly timestamps."""
+        for name, (low, high) in WEATHER_LIMITS.items():
+            values = getattr(self, name)
+            if len(values) != len(self.time):
+                raise ValueError(f"{name} must have one value per time")
+            if any(v is not None and not (math.isfinite(v) and low <= v <= high) for v in values):
+                raise ValueError(f"{name} has a value outside {low}..{high}")
+        try:
+            stamps = [datetime.fromisoformat(t) for t in self.time]
+        except ValueError as err:
+            raise ValueError("time must be ISO 8601 hours") from err
+        if any(b - a != timedelta(hours=1) for a, b in zip(stamps, stamps[1:])):
+            raise ValueError("time must be consecutive hours")
+        return self
+
+
+class ForecastRequest(BaseModel):
+    """Body of POST /forecast."""
+
+    lat: float = Field(settings.LAT, ge=-90, le=90)
+    lon: float = Field(settings.LON, ge=-180, le=180)
+    lang: Literal["en", "hi"] = "en"
+    weather: DeviceWeather
+
+
 @app.get("/health")
 def health() -> dict:
     """Liveness check."""
@@ -66,6 +109,18 @@ def forecast(lat: float = settings.LAT, lon: float = settings.LON,
         raise HTTPException(503, f"forecast unavailable: {err}") from err
 
 
+@app.post("/forecast")
+def forecast_with_device_weather(body: ForecastRequest) -> dict:
+    """Same forecast, using weather the phone/browser fetched from Open-Meteo itself.
+
+    Needed on free hosting: Open-Meteo rate-limits the shared outgoing IP of the server.
+    """
+    try:
+        return get_forecast(body.lat, body.lon, body.lang, body.weather.model_dump())
+    except Exception as err:  # upstream air-quality failure or unusable weather data
+        raise HTTPException(503, f"forecast unavailable: {err}") from err
+
+
 @app.get("/meta")
 def meta() -> dict:
     """Users and institutions for the user picker, plus model metrics for the About page."""
@@ -75,7 +130,7 @@ def meta() -> dict:
                                 ORDER BY u.id""").fetchall()
         institutions = conn.execute("SELECT id, name FROM institutions ORDER BY id").fetchall()
     return {"users": [dict(r) for r in users], "institutions": [dict(r) for r in institutions],
-            "model_metrics": load_model()[2]}
+            "model_metrics": load_model()[2], "location": {"lat": settings.LAT, "lon": settings.LON}}
 
 
 def parse_client_time(value: str) -> datetime:

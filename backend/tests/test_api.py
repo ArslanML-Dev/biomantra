@@ -1,8 +1,9 @@
 """API tests with FastAPI TestClient; YOLO is mocked (SPEC §12)."""
 import io
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
@@ -139,3 +140,42 @@ def test_too_large_upload_is_413(client: TestClient, monkeypatch: pytest.MonkeyP
             "client_time": datetime.now(timezone.utc).isoformat()}
     resp = client.post("/actions", data=data, files={"photo": ("p.jpg", jpeg_bytes(4), "image/jpeg")})
     assert resp.status_code == 413
+
+
+def device_weather(hours_back: int = 72, hours_ahead: int = 48) -> dict:
+    """An Open-Meteo-style hourly weather block around the current hour."""
+    now = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
+    times = [now + timedelta(hours=h) for h in range(-hours_back, hours_ahead)]
+    n = len(times)
+    return {"time": [t.strftime("%Y-%m-%dT%H:%M") for t in times], "temperature_2m": [20.0] * n,
+            "relative_humidity_2m": [60.0] * n, "wind_speed_10m": [5.0] * n,
+            "wind_direction_10m": [180.0] * n, "precipitation": [0.0] * n}
+
+
+def test_forecast_with_device_weather(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    """POST /forecast uses the device's weather (server weather fetch never called) and is not cached."""
+    from app import forecast
+    weather = device_weather()
+    idx = pd.to_datetime(weather["time"], utc=True)
+    monkeypatch.setattr(forecast, "fetch_air", lambda lat, lon: pd.DataFrame({"pm25": 80.0}, index=idx))
+    monkeypatch.setattr(forecast, "fetch_hourly", lambda *a, **k: pytest.fail("server must not fetch weather"))
+    forecast._cache.clear()
+    resp = client.post("/forecast", json={"lang": "hi", "weather": weather})
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["pm25_now"] == 80.0 and body["category"] and "चिकित्सा" in body["disclaimer"]
+    assert forecast._cache == {}
+    meta = client.get("/meta").json()
+    assert meta["location"] == {"lat": settings.LAT, "lon": settings.LON}
+
+
+def test_forecast_rejects_bad_device_weather(client: TestClient) -> None:
+    """Out-of-range values, wrong lengths and gaps in time are refused with 422."""
+    bad_rh = device_weather()
+    bad_rh["relative_humidity_2m"][5] = 150
+    short = device_weather()
+    short["precipitation"] = short["precipitation"][:-1]
+    gap = device_weather()
+    del gap["time"][10]
+    for weather in (bad_rh, short, gap):
+        assert client.post("/forecast", json={"weather": weather}).status_code == 422
