@@ -1,0 +1,32 @@
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "primaryColor": "#ffffff", "primaryTextColor": "#000000", "primaryBorderColor": "#000000", "secondaryColor": "#ffffff", "tertiaryColor": "#ffffff", "lineColor": "#000000", "textColor": "#000000", "mainBkg": "#ffffff", "clusterBkg": "#ffffff", "clusterBorder": "#000000", "edgeLabelBackground": "#ffffff"}}}%%
+flowchart LR
+    S(["Actor: Student<br/>(Android app / website)"])
+    A(["Actor: Admin / coordinator<br/>(website)"])
+    subgraph System["Bio Mantra"]
+        U1(("Pick user<br/>(no password)"))
+        U2(("View tomorrow's<br/>forecast EN / HI"))
+        U3(("Submit eco-action:<br/>live photo + GPS"))
+        U4(("See result:<br/>status, reasons, points"))
+        U5(("View leaderboard<br/>users / institutions"))
+        U6(("View map:<br/>forecast + hotspots"))
+        U7(("Set server URL<br/>(Settings)"))
+        U8(("View About:<br/>metrics, limitations"))
+        U9(("Log in with<br/>admin token"))
+        U10(("Review needs_review<br/>queue"))
+        U11(("Approve / reject<br/>an action"))
+    end
+    S --- U1
+    S --- U2
+    S --- U3
+    S --- U5
+    S --- U6
+    S --- U7
+    S --- U8
+    U3 -. "includes" .-> U4
+    A --- U9
+    A --- U10
+    A --- U11
+    A --- U5
+    A --- U6
+    U10 -. "includes" .-> U9
+    U11 -. "extends" .-> U10

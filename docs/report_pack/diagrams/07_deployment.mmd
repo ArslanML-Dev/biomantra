@@ -1,0 +1,20 @@
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "primaryColor": "#ffffff", "primaryTextColor": "#000000", "primaryBorderColor": "#000000", "secondaryColor": "#ffffff", "tertiaryColor": "#ffffff", "lineColor": "#000000", "textColor": "#000000", "mainBkg": "#ffffff", "clusterBkg": "#ffffff", "clusterBorder": "#000000", "edgeLabelBackground": "#ffffff"}}}%%
+flowchart LR
+    subgraph Laptop["Laptop: ASUS Vivobook 16, Windows 11 (started by start_demo.ps1)"]
+        UV["uvicorn :8000<br/>FastAPI backend<br/>SQLite biomantra.db, uploads/,<br/>LightGBM + YOLOv8n models"]
+        VITE["Vite dev server :5173<br/>React website"]
+        LB["Laptop browser<br/>http://localhost:5173"]
+        LB --> VITE
+        LB --> UV
+    end
+    subgraph Phone["Android phone"]
+        APK["BioMantra.apk<br/>Capacitor WebView with bundled web build<br/>Settings: Server URL"]
+        PB["Phone browser (optional)"]
+    end
+    WIFI{{"Same Wi-Fi network (Private profile)<br/>firewall: allow python/node on Private,<br/>or TCP 8000 + 5173 only"}}
+    NET(["Internet: Open-Meteo APIs"])
+    APK -- "http://laptop-Wi-Fi-IP:8000" --> WIFI
+    PB -- "http://laptop-Wi-Fi-IP:5173" --> WIFI
+    WIFI --> UV
+    WIFI --> VITE
+    UV -- "HTTPS: live PM2.5 and weather" --> NET

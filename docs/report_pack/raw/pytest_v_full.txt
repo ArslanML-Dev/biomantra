@@ -1,0 +1,62 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-9.1.1, pluggy-1.7.0 -- C:\dev\BIO-MANTRA-PROTOTYPE\backend\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\dev\BIO-MANTRA-PROTOTYPE\backend
+plugins: anyio-4.15.1
+collecting ... collected 35 items
+
+tests/test_api.py::test_health PASSED                                    [  2%]
+tests/test_api.py::test_action_approved_then_leaderboard PASSED          [  5%]
+tests/test_api.py::test_duplicate_and_fraud_rejected PASSED              [  8%]
+tests/test_api.py::test_review_then_admin_approve PASSED                 [ 11%]
+tests/test_api.py::test_cleanup_before_after_flow PASSED                 [ 14%]
+tests/test_api.py::test_cleanup_without_before_photo_is_400 PASSED       [ 17%]
+tests/test_dataset.py::test_fills_short_gaps_and_keeps_long_gaps PASSED  [ 20%]
+tests/test_forecast.py::test_build_features_uses_no_future_data PASSED   [ 22%]
+tests/test_forecast.py::test_target_is_pm25_24h_ahead PASSED             [ 25%]
+tests/test_forecast.py::test_category_band_edges[30-Good] PASSED         [ 28%]
+tests/test_forecast.py::test_category_band_edges[31-Satisfactory] PASSED [ 31%]
+tests/test_forecast.py::test_category_band_edges[60-Satisfactory] PASSED [ 34%]
+tests/test_forecast.py::test_category_band_edges[61-Moderately polluted] PASSED [ 37%]
+tests/test_forecast.py::test_category_band_edges[90-Moderately polluted] PASSED [ 40%]
+tests/test_forecast.py::test_category_band_edges[91-Poor] PASSED         [ 42%]
+tests/test_forecast.py::test_category_band_edges[120-Poor] PASSED        [ 45%]
+tests/test_forecast.py::test_category_band_edges[121-Very poor] PASSED   [ 48%]
+tests/test_forecast.py::test_category_band_edges[250-Very poor] PASSED   [ 51%]
+tests/test_forecast.py::test_category_band_edges[251-Severe] PASSED      [ 54%]
+tests/test_forecast.py::test_mean24_target_is_mean_of_next_24_hours PASSED [ 57%]
+tests/test_forecast.py::test_future_weather_never_uses_future_pm25 PASSED [ 60%]
+tests/test_forecast.py::test_future_weather_is_next_24h_mean PASSED      [ 62%]
+tests/test_scoring.py::test_points_by_type[sapling-4] PASSED             [ 65%]
+tests/test_scoring.py::test_points_by_type[segregated_bin-2] PASSED      [ 68%]
+tests/test_scoring.py::test_points_by_type[cleanup-5] PASSED             [ 71%]
+tests/test_scoring.py::test_points_by_type[dumping_report-2] PASSED      [ 74%]
+tests/test_scoring.py::test_week_starts_monday_midnight_ist PASSED       [ 77%]
+tests/test_scoring.py::test_leaderboard_weekly_points PASSED             [ 80%]
+tests/test_scoring.py::test_cleanup_within_150m_closes_hotspot PASSED    [ 82%]
+tests/test_verify.py::test_clock_skew_rejected PASSED                    [ 85%]
+tests/test_verify.py::test_outside_geofence_rejected PASSED              [ 88%]
+tests/test_verify.py::test_same_image_twice_is_duplicate PASSED          [ 91%]
+tests/test_verify.py::test_resized_copy_is_duplicate_but_other_image_is_not PASSED [ 94%]
+tests/test_verify.py::test_decision_threshold_boundaries PASSED          [ 97%]
+tests/test_verify.py::test_ai_check_rules_with_mocked_detections PASSED  [100%]
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\dev\BIO-MANTRA-PROTOTYPE\backend\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv\Lib\site-packages\shap\plots\colors\_colors.py:47
+  C:\dev\BIO-MANTRA-PROTOTYPE\backend\.venv\Lib\site-packages\shap\plots\colors\_colors.py:47: PendingDeprecationWarning: The set_bad function will be deprecated in a future version. Use cmap.with_extremes(bad=...) or Colormap(bad=...) instead.
+    red_blue.set_bad(gray_rgb.tolist(), 1.0)
+
+.venv\Lib\site-packages\shap\plots\colors\_colors.py:48
+  C:\dev\BIO-MANTRA-PROTOTYPE\backend\.venv\Lib\site-packages\shap\plots\colors\_colors.py:48: PendingDeprecationWarning: The set_over function will be deprecated in a future version. Use cmap.with_extremes(over=...) or Colormap(over=...) instead.
+    red_blue.set_over(gray_rgb.tolist(), 1.0)
+
+.venv\Lib\site-packages\shap\plots\colors\_colors.py:49
+  C:\dev\BIO-MANTRA-PROTOTYPE\backend\.venv\Lib\site-packages\shap\plots\colors\_colors.py:49: PendingDeprecationWarning: The set_under function will be deprecated in a future version. Use cmap.with_extremes(under=...) or Colormap(under=...) instead.
+    red_blue.set_under(gray_rgb.tolist(), 1.0)  # "under" is incorrectly used instead of "bad" in the scatter plot
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 35 passed, 4 warnings in 3.07s ========================

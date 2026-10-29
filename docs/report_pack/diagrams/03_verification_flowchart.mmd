@@ -1,0 +1,21 @@
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "primaryColor": "#ffffff", "primaryTextColor": "#000000", "primaryBorderColor": "#000000", "secondaryColor": "#ffffff", "tertiaryColor": "#ffffff", "lineColor": "#000000", "textColor": "#000000", "mainBkg": "#ffffff", "clusterBkg": "#ffffff", "clusterBorder": "#000000", "edgeLabelBackground": "#ffffff"}}}%%
+flowchart TB
+    START(["POST /actions<br/>photo, GPS, client_time, action_type"]) --> C1
+    C1{"Clock check<br/>server time vs client_time<br/>differ by more than 10 min?"}
+    C2{"Geofence<br/>distance from campus<br/>more than 25 km?"}
+    C3{"Duplicate<br/>pHash Hamming distance to any<br/>stored photo 6 or less?"}
+    C1 -- "no" --> C2
+    C2 -- "no" --> C3
+    C1 -- "yes: photo time does not match server time" --> FAIL
+    C2 -- "yes: outside the allowed area" --> FAIL
+    C3 -- "yes: photo already submitted" --> FAIL
+    FAIL["REJECTED<br/>all failed reasons returned<br/>(the AI is not run)"]
+    C3 -- "no" --> AI
+    AI["YOLOv8n (COCO) detections, ai_check by action type<br/>sapling: best potted-plant confidence<br/>segregated bin: best litter confidence<br/>dumping report: mean of top-2 litter confidences<br/>cleanup: litter count before vs after"]
+    AI --> D1{"confidence<br/>0.60 or more?"}
+    D1 -- "yes" --> OK["APPROVED<br/>points given now"]
+    D1 -- "no" --> D2{"confidence<br/>0.30 or more?"}
+    D2 -- "yes" --> REV["NEEDS_REVIEW<br/>human coordinator decides in /admin"]
+    D2 -- "no" --> NO["REJECTED<br/>AI could not confirm the action"]
+    REV -- "approve" --> OK
+    REV -- "reject" --> NO2["REJECTED by reviewer"]

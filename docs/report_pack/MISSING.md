@@ -11,3 +11,8 @@ Nothing below has been estimated or filled in. Each item needs a real run first.
 | 5 | Live accuracy of the **deployed v2 forecast** | Test scores use the actual next-24 h weather; live forecasts use the Open-Meteo weather forecast, which is less accurate, and no live log has been collected | Save `/forecast` once a day for a few weeks and compare it with the observed 24-h mean |
 | 6 | Proof of **deployment** (Render/Vercel/ngrok) and a **mobile-data** test | Needs accounts and logins | `docs/HANDOFF.md` section F |
 | 7 | The original **synopsis** comparison | The synopsis document isn't in the repository | Add its items to `raw/changes_from_synopsis.md` |
+| 8 | **The rest of the second instruction list** (the `limitations.md` bullets after "modelled data, not CPCB station data", and anything after it) | The second request also ended mid-list | `docs/limitations.md` covers the received bullet plus the limitations already documented in the project; send the rest to add them |
+| 9 | Rendered **PNG diagrams** | `mmdc` (mermaid-cli) isn't installed; the instructions said to include only the `.mmd` files in that case | `npx -p @mermaid-js/mermaid-cli mmdc -i <file>.mmd -o <file>.png -s 3 -b white`, or mermaid.live |
+| 10 | **Phone model** in `docs/tech_stack.md` | No phone has been connected | Fill it in after installing the APK |
+| 11 | **Why the project moved out of OneDrive** | Not recorded in progress.md | Add the reason to `docs/implementation_story.md` §3 |
+| 12 | A **real `/hotspots` sample** with data | No dumping report was approved in the recorded API runs (the screenshot hotspots were inserted directly as demo data) | Approve a dumping report in `/admin`, then save the `GET /hotspots` output |

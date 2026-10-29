@@ -1,0 +1,44 @@
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "primaryColor": "#ffffff", "primaryTextColor": "#000000", "primaryBorderColor": "#000000", "secondaryColor": "#ffffff", "tertiaryColor": "#ffffff", "lineColor": "#000000", "textColor": "#000000", "mainBkg": "#ffffff", "attributeBackgroundColorOdd": "#ffffff", "attributeBackgroundColorEven": "#ffffff"}}}%%
+erDiagram
+    institutions ||--o{ users : "has"
+    users ||--o{ actions : "submits"
+    actions ||--o| hotspots : "dumping_report creates"
+    actions |o--o| hotspots : "cleanup closes"
+    institutions {
+        INTEGER id PK
+        TEXT name "UNIQUE NOT NULL"
+    }
+    users {
+        INTEGER id PK
+        TEXT name "NOT NULL"
+        INTEGER institution_id FK
+    }
+    actions {
+        INTEGER id PK
+        INTEGER user_id FK "NOT NULL"
+        TEXT action_type "CHECK: sapling, segregated_bin, cleanup, dumping_report"
+        TEXT photo_path "NOT NULL"
+        TEXT before_photo_path
+        REAL lat "NOT NULL"
+        REAL lon "NOT NULL"
+        TEXT client_time "NOT NULL"
+        TEXT server_time "NOT NULL"
+        TEXT phash "NOT NULL"
+        TEXT status "CHECK: approved, needs_review, rejected"
+        TEXT reasons "JSON list, NOT NULL"
+        REAL confidence
+        TEXT detections "JSON"
+        TEXT model_version
+        INTEGER points "DEFAULT 0"
+        TEXT reviewed_by
+        TEXT reviewed_at
+    }
+    hotspots {
+        INTEGER id PK
+        INTEGER action_id FK
+        REAL lat
+        REAL lon
+        TEXT created_at
+        INTEGER cleaned_action_id "refers to actions.id, no FK constraint"
+        TEXT cleaned_at
+    }

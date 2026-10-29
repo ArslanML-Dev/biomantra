@@ -1,0 +1,37 @@
+# Real responses of the action/admin endpoints, 2026-10-29T13:58:42Z
+# Fresh throwaway database; real YOLOv8n; photo = raw/samples/coco_139_plant.jpg
+
+## POST /actions (sapling, campus coordinates, client_time = now)
+{"id":1,"status":"needs_review","confidence":0.421,"points":0,"reasons":["AI is not fully sure — sent to a coordinator"],"detections":[{"name":"tv","conf":0.927,"box":[6.2,166.2,154.5,261.9]},{"name":"chair","conf":0.854,"box":[293.2,217.5,354.4,314.9]},{"name":"person","conf":0.712,"box":[412.6,157.0,465.8,298.9]},{"name":"chair","conf":0.523,"box":[361.8,217.1,443.8,311.2]},{"name":"chair","conf":0.508,"box":[388.7,217.9,443.9,309.8]},{"name":"chair","conf":0.506,"box":[361.2,217.6,419.1,310.8]},{"name":"potted plant","conf":0.421,"box":[225.9,177.4,266.6,213.1]},{"name":"vase","conf":0.392,"box":[548.8,297.7,587.9,401.0]},{"name":"refrigerator","conf":0.356,"box":[443.7,167.5,508.7,293.0]},{"name":"dining table","conf":0.278,"box":[461.2,357.5,640.0,424.7]},{"name":"clock","conf":0.278,"box":[448.6,121.2,461.4,141.4]},{"name":"dining table","conf":0.267,"box":[297.0,215.9,415.5,311.7]},{"name":"chair","conf":0.266,"box":[403.8,221.2,445.1,307.1]}]}
+[HTTP 200]
+
+## POST /actions (same photo again)
+{"id":2,"status":"rejected","confidence":null,"points":0,"reasons":["this photo (or a near copy) was already submitted"],"detections":[]}
+[HTTP 200]
+
+## POST /actions (cleanup without before_photo)
+{"detail":"cleanup needs a before_photo"}
+[HTTP 400]
+
+## GET /admin/review (no token)
+{"detail":"invalid admin token"}
+[HTTP 401]
+
+## GET /admin/review (X-Admin-Token: <ADMIN_TOKEN from .env, not shown>)
+[{"id":1,"user_id":1,"user_name":"Aarav Sharma","action_type":"sapling","confidence":0.421,"server_time":"2026-10-29T13:58:43+00:00","lat":28.4725,"lon":77.4889,"photo_url":"/uploads/73274ccbf0f946479ed02c0d9c10e8e2.jpg","before_photo_url":null,"detections":[{"name":"tv","conf":0.927,"box":[6.2,166.2,154.5,261.9]},{"name":"chair","conf":0.854,"box":[293.2,217.5,354.4,314.9]},{"name":"person","conf":0.712,"box":[412.6,157.0,465.8,298.9]},{"name":"chair","conf":0.523,"box":[361.8,217.1,443.8,311.2]},{"name":"chair","conf":0.508,"box":[388.7,217.9,443.9,309.8]},{"name":"chair","conf":0.506,"box":[361.2,217.6,419.1,310.8]},{"name":"potted plant","conf":0.421,"box":[225.9,177.4,266.6,213.1]},{"name":"vase","conf":0.392,"box":[548.8,297.7,587.9,401.0]},{"name":"refrigerator","conf":0.356,"box":[443.7,167.5,508.7,293.0]},{"name":"dining table","conf":0.278,"box":[461.2,357.5,640.0,424.7]},{"name":"clock","conf":0.278,"box":[448.6,121.2,461.4,141.4]},{"name":"dining table","conf":0.267,"box":[297.0,215.9,415.5,311.7]},{"name":"chair","conf":0.266,"box":[403.8,221.2,445.1,307.1]}],"reasons":["AI is not fully sure — sent to a coordinator"]}]
+[HTTP 200]
+
+## POST /admin/review/1 {"decision":"approve","reviewer":"coordinator"}
+{"id":1,"status":"approved","points":4}
+[HTTP 200]
+
+## GET /leaderboard?scope=users
+[{"rank":1,"id":1,"name":"Aarav Sharma","points_total":4,"points_week":4,"goal":50,"progress":0.08},{"rank":2,"id":4,"name":"Ananya Gupta","points_total":0,"points_week":0,"goal":50,"progress":0.0},{"rank":3,"id":7,"name":"Arjun Mehta","points_total":0,"points_week":0,"goal":50,"progress":0.0},{"rank":4,"id":2,"name":"Diya Patel","points_total":0,"points_week":0,"goal":50,"progress":0.0},{"rank":5,"id":6,"name":"Isha Reddy","points_total":0,"points_week":0,"goal":50,"progress":0.0},{"rank":6,"id":3,"name":"Kabir Singh","points_total":0,"points_week":0,"goal":50,"progress":0.0},{"rank":7,"id":10,"name":"Meera Iyer","points_total":0,"points_week":0,"goal":50,"progress":0.0},{"rank":8,"id":9,"name":"Rohan Das","points_total":0,"points_week":0,"goal":50,"progress":0.0},{"rank":9,"id":8,"name":"Sara Khan","points_total":0,"points_week":0,"goal":50,"progress":0.0},{"rank":10,"id":5,"name":"Vihaan Verma","points_total":0,"points_week":0,"goal":50,"progress":0.0}]
+[HTTP 200]
+
+## GET /hotspots
+[]
+[HTTP 200]
+
+## GET /uploads/<file of action 1>
+HTTP 200, image/jpeg, 68032 bytes

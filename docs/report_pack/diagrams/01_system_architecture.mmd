@@ -1,0 +1,27 @@
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "primaryColor": "#ffffff", "primaryTextColor": "#000000", "primaryBorderColor": "#000000", "secondaryColor": "#ffffff", "tertiaryColor": "#ffffff", "lineColor": "#000000", "textColor": "#000000", "mainBkg": "#ffffff", "clusterBkg": "#ffffff", "clusterBorder": "#000000", "edgeLabelBackground": "#ffffff"}}}%%
+flowchart LR
+    subgraph Clients["Clients (one React + TypeScript codebase)"]
+        APP["Android app<br/>React + Capacitor 7<br/>Camera + Geolocation plugins"]
+        WEB["Website<br/>same React build (Vite)<br/>Home, Leaderboard, Map, Admin, About"]
+    end
+    subgraph Backend["FastAPI backend (backend/app)"]
+        MAIN["main.py<br/>/health /forecast /meta /actions<br/>/leaderboard /hotspots /admin/review /uploads"]
+        FC["forecast.py<br/>build_features, LightGBM v2,<br/>SHAP reason, EN/HI tips, 30-min cache"]
+        VER["verify.py<br/>clock, geofence, pHash duplicate,<br/>YOLOv8n (COCO) AI check, decide"]
+        SCO["scoring.py<br/>points, weekly goal, leaderboard,<br/>hotspot open/close"]
+        DB[("SQLite biomantra.db<br/>institutions, users,<br/>actions, hotspots")]
+        UP[("uploads/<br/>photos (UUID .jpg)")]
+        MOD[("models/<br/>lgbm.txt, feature_list.json,<br/>metrics.json, yolov8n.pt")]
+    end
+    OM["Open-Meteo APIs<br/>Air Quality (PM2.5)<br/>Weather forecast"]
+    APP -- "HTTP JSON + multipart photo" --> MAIN
+    WEB -- "HTTP JSON" --> MAIN
+    MAIN --> FC
+    MAIN --> VER
+    MAIN --> SCO
+    FC --> MOD
+    VER --> MOD
+    MAIN --> DB
+    SCO --> DB
+    MAIN --> UP
+    FC -- "last 3 days + next 2 days, hourly" --> OM

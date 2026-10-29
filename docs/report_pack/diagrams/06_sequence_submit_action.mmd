@@ -1,0 +1,32 @@
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "primaryColor": "#ffffff", "primaryTextColor": "#000000", "primaryBorderColor": "#000000", "lineColor": "#000000", "textColor": "#000000", "actorBkg": "#ffffff", "actorBorder": "#000000", "actorTextColor": "#000000", "actorLineColor": "#000000", "signalColor": "#000000", "signalTextColor": "#000000", "labelBoxBkgColor": "#ffffff", "labelBoxBorderColor": "#000000", "labelTextColor": "#000000", "loopTextColor": "#000000", "noteBkgColor": "#ffffff", "noteBorderColor": "#000000", "noteTextColor": "#000000", "activationBkgColor": "#ffffff", "activationBorderColor": "#000000", "altSectionBkgColor": "#ffffff", "sequenceNumberColor": "#ffffff"}}}%%
+sequenceDiagram
+    actor U as Student
+    participant APP as Android app (Act.tsx)
+    participant API as FastAPI POST /actions (main.py)
+    participant V as verify.py
+    participant DB as SQLite
+    participant S as scoring.py
+    U->>APP: choose action type, tap "Take photo & submit"
+    APP->>APP: Camera.getPhoto (camera only), Geolocation.getCurrentPosition
+    APP->>API: multipart: user_id, action_type, lat, lon, client_time, photo (+ before_photo for cleanup)
+    API->>V: compute_phash(photo)
+    API->>DB: SELECT phash FROM actions
+    DB-->>API: stored hashes
+    API->>V: check_clock, check_geofence, check_duplicate
+    alt any check failed
+        V-->>API: failure reasons
+        Note over API: status = rejected, AI not run
+    else all checks passed
+        API->>V: detect (YOLOv8n) on photo (and before photo)
+        V-->>API: detections
+        API->>V: ai_check, then decide(confidence, 0.60, 0.30)
+        V-->>API: approved / needs_review / rejected + reason
+    end
+    API->>API: save photo(s) to uploads/ (UUID .jpg)
+    API->>DB: INSERT INTO actions
+    opt status is approved
+        API->>S: apply_approval
+        S->>DB: set points, create or close hotspot
+    end
+    API-->>APP: JSON: id, status, confidence, points, reasons, detections
+    APP-->>U: result screen
