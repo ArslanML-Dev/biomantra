@@ -1,6 +1,7 @@
 // Act: pick an action, take a LIVE camera photo (never the gallery) + GPS, submit, show the result.
 // App: native camera (Capacitor). Website: live browser camera preview (getUserMedia), no file picker.
 import { useEffect, useRef, useState, type ReactElement } from "react";
+import { createPortal } from "react-dom";
 import { Capacitor } from "@capacitor/core";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { Geolocation } from "@capacitor/geolocation";
@@ -60,14 +61,16 @@ function WebCamera({ hi, onCapture, onCancel }: { hi: boolean; onCapture: (b: Bl
     canvas.toBlob((b) => b && onCapture(b), "image/jpeg", 0.88);
   };
 
-  return (
+  // Rendered on <body>: a parent with backdrop-filter would otherwise trap this full-screen layer.
+  return createPortal(
     <div className="camera">
       {error ? <p className="error" style={{ padding: 16 }}>{error}</p> : <video ref={video} playsInline muted />}
       <div className="row">
         <button className="btn ghost" onClick={onCancel}>{hi ? "रद्द करें" : "Cancel"}</button>
         {!error && <button className="btn gold" onClick={capture}><CameraIcon /> {hi ? "फ़ोटो लें" : "Capture"}</button>}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
