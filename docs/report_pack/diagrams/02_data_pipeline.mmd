@@ -1,6 +1,6 @@
 %%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "primaryColor": "#ffffff", "primaryTextColor": "#000000", "primaryBorderColor": "#000000", "secondaryColor": "#ffffff", "tertiaryColor": "#ffffff", "lineColor": "#000000", "textColor": "#000000", "mainBkg": "#ffffff", "clusterBkg": "#ffffff", "clusterBorder": "#000000", "edgeLabelBackground": "#ffffff"}}}%%
 flowchart TB
-    subgraph Fetch["1. Fetch (backend/scripts)"]
+    subgraph Fetch["Step 1: Fetch (backend/scripts)"]
         F1["fetch_history.py --source openmeteo<br/>Open-Meteo Air Quality, 30-day chunks, 3 retries"]
         F2["fetch_weather.py<br/>Open-Meteo archive, yearly chunks"]
         R1[("data/air_raw.csv<br/>37,099 rows, from 2022-08-04")]
@@ -8,24 +8,24 @@ flowchart TB
         F1 --> R1
         F2 --> R2
     end
-    subgraph Merge["2. Merge (make_dataset.py)"]
+    subgraph Merge["Step 2: Merge (make_dataset.py)"]
         M1["join on UTC hour, reindex to every hour,<br/>linear fill of gaps of 3 h or less"]
         M2[("data/hourly.parquet<br/>37,080 rows")]
         M1 --> M2
     end
-    subgraph Features["3. Features (app/forecast.py: build_features)"]
+    subgraph Features["Step 3: Features (app/forecast.py: build_features)"]
         B1["past: PM2.5 lags 1-48 h, rolling mean/std,<br/>temp, rh, wind, rain 24 h, hour, dow, month, winter"]
         B2["next-24 h weather means + rain total<br/>(actual weather in training, forecast when live)"]
         B3["target v2: mean PM2.5 over t+1 .. t+24 h"]
     end
-    subgraph Train["4. Train (train_forecast.py)"]
+    subgraph Train["Step 4: Train (train_forecast.py)"]
         T1["shared 37,008 rows, time split 70 / 15 / 15"]
         T2["persistence, linear regression, LightGBM<br/>x 2 targets x 2 feature sets"]
         T3["select: lowest validation MAE among 24-h-mean runs"]
         T4[("models/lgbm.txt, feature_list.json,<br/>metrics.json (test MAE 18.07)")]
         T1 --> T2 --> T3 --> T4
     end
-    subgraph Serve["5. Serve (GET /forecast)"]
+    subgraph Serve["Step 5: Serve (GET /forecast)"]
         S1["fetch live: Open-Meteo PM2.5 past 3 days<br/>+ weather past 3 days and next 2 days"]
         S2["same build_features, current-hour row"]
         S3["LightGBM predict + SHAP top-2 reasons<br/>CPCB category, EN/HI tip, disclaimer"]
