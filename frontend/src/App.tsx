@@ -4,7 +4,7 @@ import { Link, NavLink, Route, Routes, useLocation } from "react-router-dom";
 import type { Lang, User } from "./api";
 import { t } from "./i18n";
 import { loadUser, saveUser } from "./user";
-import { CameraIcon, GearIcon, HomeIcon, MapIcon, TrophyIcon } from "./icons";
+import { CameraIcon, GearIcon, HomeIcon, LeafIcon, MapIcon, TrophyIcon } from "./icons";
 import Home from "./pages/Home";
 import Act from "./pages/Act";
 import Leaderboard from "./pages/Leaderboard";
@@ -39,7 +39,7 @@ export default function App() {
     <div className={wide ? "shell wide" : "shell"}>
       <header className="topbar">
         <Link to="/" className="brand" aria-label="Bio Mantra home">
-          <span className="mono">BM</span>
+          <span className="mono"><LeafIcon /></span>
           <span className="word">Bio <em>Mantra</em></span>
         </Link>
         <nav className="toplinks">
