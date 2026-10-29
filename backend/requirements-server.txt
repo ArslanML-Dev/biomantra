@@ -1,0 +1,16 @@
+# Slim runtime for the deployed API (Render free tier: 512 MB RAM). No PyTorch/Ultralytics/SHAP here:
+# YOLOv8n runs from models/yolov8n.onnx with onnxruntime, SHAP values come from LightGBM's pred_contrib.
+# Training, report figures and tests use the full requirements.txt.
+fastapi==0.162.0
+uvicorn[standard]==0.54.0
+python-multipart==0.0.32
+python-dotenv==1.2.4
+requests==2.34.2
+pandas==2.2.3
+numpy==2.2.6
+lightgbm==4.7.0
+onnxruntime==1.23.2
+ImageHash==4.3.2
+pillow==12.3.0
+scipy==1.17.1
+PyWavelets==1.9.0

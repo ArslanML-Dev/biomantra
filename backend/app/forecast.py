@@ -9,7 +9,6 @@ import lightgbm as lgb
 import numpy as np
 import pandas as pd
 import requests
-import shap
 
 LAGS = [1, 2, 3, 6, 12, 24, 48]
 HORIZON_H = 24
@@ -254,7 +253,8 @@ def predict_core(lat: float, lon: float) -> dict:
     X, _ = build_features(live, target=config["target"], with_future_weather=config["future_weather"])
     row = current_row(X[features], live)
     value = float(booster.predict(row)[0])
-    shap_row = shap.TreeExplainer(booster).shap_values(row)[0]
+    # TreeSHAP values from LightGBM itself (what shap.TreeExplainer calls internally); last column = bias
+    shap_row = booster.predict(row, pred_contrib=True)[0][:-1]
     category, tier, colour = pm25_to_category(value)
     high = tier >= 2
     return {

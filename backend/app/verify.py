@@ -1,14 +1,20 @@
 """Anti-fraud gate and AI check for eco-action photos (SPEC §7). Cheap checks first, AI last."""
+import ast
 import math
 from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
 
 import imagehash
+import numpy as np
+import onnxruntime as ort
 from PIL import Image
 
 MODELS_DIR = Path(__file__).resolve().parent.parent / "models"
 MODEL_VERSION = "yolov8n-coco"
+# YOLOv8n is the Ultralytics COCO model, exported once to ONNX (scripts/export_yolo_onnx.py) so the server
+# needs only onnxruntime (~50 MB) instead of PyTorch (~1 GB). Settings = Ultralytics predict defaults.
+YOLO_SIZE, YOLO_CONF, YOLO_IOU, YOLO_MAX_DET = 640, 0.25, 0.7, 300
 LITTER = {"bottle", "cup", "bowl", "wine glass", "fork", "knife", "spoon"}
 MIN_LITTER_CONF = 0.25
 
@@ -55,19 +61,60 @@ def check_duplicate(phash: str, existing: list[str], max_distance: int) -> str |
 
 
 @lru_cache(maxsize=1)
-def get_model():
-    """Load YOLOv8n (COCO) once and reuse it."""
-    from ultralytics import YOLO
-    MODELS_DIR.mkdir(exist_ok=True)
-    return YOLO(str(MODELS_DIR / "yolov8n.pt"))
+def get_model() -> tuple[ort.InferenceSession, dict[int, str]]:
+    """Load YOLOv8n (COCO, exported to ONNX) once, with its class names."""
+    session = ort.InferenceSession(str(MODELS_DIR / "yolov8n.onnx"), providers=["CPUExecutionProvider"])
+    names = ast.literal_eval(session.get_modelmeta().custom_metadata_map["names"])
+    return session, names
+
+
+def letterbox(image: Image.Image) -> tuple[np.ndarray, float, int, int]:
+    """Resize keeping the aspect ratio and pad to 640x640 grey, like Ultralytics; return tensor, scale, padding."""
+    w, h = image.size
+    scale = min(YOLO_SIZE / w, YOLO_SIZE / h)
+    nw, nh = round(w * scale), round(h * scale)
+    left, top = round((YOLO_SIZE - nw) / 2 - 0.1), round((YOLO_SIZE - nh) / 2 - 0.1)
+    canvas = Image.new("RGB", (YOLO_SIZE, YOLO_SIZE), (114, 114, 114))
+    canvas.paste(image.resize((nw, nh), Image.BILINEAR), (left, top))
+    tensor = np.asarray(canvas, dtype=np.float32).transpose(2, 0, 1)[None] / 255.0
+    return tensor, scale, left, top
+
+
+def nms(boxes: np.ndarray, scores: np.ndarray, iou_limit: float) -> list[int]:
+    """Greedy non-maximum suppression: keep the best box, drop boxes overlapping it more than iou_limit."""
+    order, keep = scores.argsort()[::-1], []
+    areas = (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1])
+    while order.size:
+        best, rest = order[0], order[1:]
+        keep.append(int(best))
+        x1 = np.maximum(boxes[best, 0], boxes[rest, 0])
+        y1 = np.maximum(boxes[best, 1], boxes[rest, 1])
+        x2 = np.minimum(boxes[best, 2], boxes[rest, 2])
+        y2 = np.minimum(boxes[best, 3], boxes[rest, 3])
+        inter = np.clip(x2 - x1, 0, None) * np.clip(y2 - y1, 0, None)
+        order = rest[inter / (areas[best] + areas[rest] - inter) <= iou_limit]
+    return keep
 
 
 def detect(image: Image.Image) -> list[dict]:
-    """Run YOLO on an image -> [{"name", "conf", "box": [x1, y1, x2, y2]}]."""
-    result = get_model()(image, verbose=False)[0]
-    return [{"name": result.names[int(cls)], "conf": round(float(conf), 3),
-             "box": [round(float(v), 1) for v in box]}
-            for cls, conf, box in zip(result.boxes.cls, result.boxes.conf, result.boxes.xyxy)]
+    """Run YOLOv8n on an image -> [{"name", "conf", "box": [x1, y1, x2, y2]}], best first."""
+    session, names = get_model()
+    tensor, scale, left, top = letterbox(image)
+    preds = session.run(None, {"images": tensor})[0][0].T  # 8400 rows: cx, cy, w, h, 80 class scores
+    cls = preds[:, 4:].argmax(1)
+    conf = preds[:, 4:].max(1)
+    preds, cls, conf = preds[conf >= YOLO_CONF], cls[conf >= YOLO_CONF], conf[conf >= YOLO_CONF]
+    cx, cy, bw, bh = preds[:, 0], preds[:, 1], preds[:, 2], preds[:, 3]
+    boxes = np.stack([cx - bw / 2, cy - bh / 2, cx + bw / 2, cy + bh / 2], axis=1)
+    keep = nms(boxes + cls[:, None] * 7680.0, conf, YOLO_IOU)[:YOLO_MAX_DET]  # offset = per-class NMS
+    w, h = image.size
+    out = []
+    for i in keep:
+        x1, y1, x2, y2 = (boxes[i] - [left, top, left, top]) / scale
+        box = [min(max(x1, 0), w), min(max(y1, 0), h), min(max(x2, 0), w), min(max(y2, 0), h)]
+        out.append({"name": names[int(cls[i])], "conf": round(float(conf[i]), 3),
+                    "box": [round(float(v), 1) for v in box]})
+    return out
 
 
 def litter_confs(detections: list[dict]) -> list[float]:

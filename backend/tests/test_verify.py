@@ -69,3 +69,14 @@ def test_ai_check_rules_with_mocked_detections() -> None:
     assert verify.ai_check("cleanup", [], before_detections=litter) == 1.0
     assert verify.ai_check("cleanup", litter[:1], before_detections=litter) == 0.5
     assert verify.ai_check("cleanup", litter, before_detections=litter) == 0.0
+
+
+def test_real_onnx_yolo_on_sample_photos() -> None:
+    """The real YOLOv8n ONNX model finds the potted plant (COCO #139) and nothing on a plain wall."""
+    from pathlib import Path
+    data = Path(__file__).parent / "data"
+    plant = verify.detect(Image.open(data / "coco_139_plant.jpg").convert("RGB"))
+    plant_conf = verify.ai_check("sapling", plant)
+    assert 0.30 <= plant_conf < 0.60  # needs_review, as with the original PyTorch model (0.421)
+    assert all(0 <= v for d in plant for v in d["box"])
+    assert verify.detect(Image.open(data / "synthetic_wall.jpg").convert("RGB")) == []
