@@ -1,0 +1,181 @@
+{
+  "data_source": "openmeteo",
+  "rows": 37008,
+  "test_period": [
+    "2026-03-08",
+    "2026-10-25"
+  ],
+  "model": {
+    "kind": "lightgbm",
+    "target": "mean24",
+    "future_weather": true,
+    "target_label": "mean PM2.5 over the next 24 h"
+  },
+  "best_iteration": 321,
+  "persistence": {
+    "mae": 24.333,
+    "rmse": 35.993,
+    "r2": 0.404,
+    "acc_cat": 0.486,
+    "macro_f1": 0.441,
+    "recall_poor_plus": 0.755
+  },
+  "linear": {
+    "mae": 19.525,
+    "rmse": 28.787,
+    "r2": 0.619,
+    "acc_cat": 0.583,
+    "macro_f1": 0.491,
+    "recall_poor_plus": 0.728
+  },
+  "lightgbm": {
+    "mae": 18.065,
+    "rmse": 26.297,
+    "r2": 0.682,
+    "acc_cat": 0.559,
+    "macro_f1": 0.478,
+    "recall_poor_plus": 0.771
+  },
+  "experiments": [
+    {
+      "target": "t24",
+      "future_weather": false,
+      "val_mae": {
+        "persistence": 24.158,
+        "linear": 22.941,
+        "lightgbm": 22.861
+      },
+      "test": {
+        "persistence": {
+          "mae": 33.657,
+          "rmse": 50.442,
+          "r2": 0.169,
+          "acc_cat": 0.409,
+          "macro_f1": 0.364,
+          "recall_poor_plus": 0.716
+        },
+        "linear": {
+          "mae": 29.973,
+          "rmse": 44.942,
+          "r2": 0.34,
+          "acc_cat": 0.407,
+          "macro_f1": 0.328,
+          "recall_poor_plus": 0.633
+        },
+        "lightgbm": {
+          "mae": 30.018,
+          "rmse": 44.156,
+          "r2": 0.363,
+          "acc_cat": 0.399,
+          "macro_f1": 0.335,
+          "recall_poor_plus": 0.681
+        }
+      }
+    },
+    {
+      "target": "t24",
+      "future_weather": true,
+      "val_mae": {
+        "persistence": 24.158,
+        "linear": 22.36,
+        "lightgbm": 20.099
+      },
+      "test": {
+        "persistence": {
+          "mae": 33.657,
+          "rmse": 50.442,
+          "r2": 0.169,
+          "acc_cat": 0.409,
+          "macro_f1": 0.364,
+          "recall_poor_plus": 0.716
+        },
+        "linear": {
+          "mae": 29.463,
+          "rmse": 44.484,
+          "r2": 0.354,
+          "acc_cat": 0.422,
+          "macro_f1": 0.358,
+          "recall_poor_plus": 0.664
+        },
+        "lightgbm": {
+          "mae": 28.026,
+          "rmse": 42.668,
+          "r2": 0.405,
+          "acc_cat": 0.438,
+          "macro_f1": 0.375,
+          "recall_poor_plus": 0.711
+        }
+      }
+    },
+    {
+      "target": "mean24",
+      "future_weather": false,
+      "val_mae": {
+        "persistence": 23.687,
+        "linear": 15.182,
+        "lightgbm": 15.04
+      },
+      "test": {
+        "persistence": {
+          "mae": 24.333,
+          "rmse": 35.993,
+          "r2": 0.404,
+          "acc_cat": 0.486,
+          "macro_f1": 0.441,
+          "recall_poor_plus": 0.755
+        },
+        "linear": {
+          "mae": 19.504,
+          "rmse": 28.388,
+          "r2": 0.629,
+          "acc_cat": 0.561,
+          "macro_f1": 0.467,
+          "recall_poor_plus": 0.717
+        },
+        "lightgbm": {
+          "mae": 19.746,
+          "rmse": 28.111,
+          "r2": 0.636,
+          "acc_cat": 0.528,
+          "macro_f1": 0.443,
+          "recall_poor_plus": 0.762
+        }
+      }
+    },
+    {
+      "target": "mean24",
+      "future_weather": true,
+      "val_mae": {
+        "persistence": 23.687,
+        "linear": 14.424,
+        "lightgbm": 12.909
+      },
+      "test": {
+        "persistence": {
+          "mae": 24.333,
+          "rmse": 35.993,
+          "r2": 0.404,
+          "acc_cat": 0.486,
+          "macro_f1": 0.441,
+          "recall_poor_plus": 0.755
+        },
+        "linear": {
+          "mae": 19.525,
+          "rmse": 28.787,
+          "r2": 0.619,
+          "acc_cat": 0.583,
+          "macro_f1": 0.491,
+          "recall_poor_plus": 0.728
+        },
+        "lightgbm": {
+          "mae": 18.065,
+          "rmse": 26.297,
+          "r2": 0.682,
+          "acc_cat": 0.559,
+          "macro_f1": 0.478,
+          "recall_poor_plus": 0.771
+        }
+      }
+    }
+  ]
+}

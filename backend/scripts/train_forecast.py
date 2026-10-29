@@ -83,6 +83,15 @@ def train_lightgbm(split: dict) -> lgb.LGBMRegressor:
     return model
 
 
+def shared_rows(df: pd.DataFrame) -> pd.Index:
+    """Hours that are complete for EVERY config, so all runs train and test on the same rows."""
+    keep = pd.Series(True, index=df.index)
+    for target, fw in CONFIGS:
+        X, y = build_features(df, target=target, with_future_weather=fw)
+        keep &= X.notna().all(axis=1) & y.notna()
+    return df.index[keep]
+
+
 def run_config(df: pd.DataFrame, rows: pd.Index, target: str, fw: bool) -> dict:
     """Train persistence, linear and LightGBM for one (target, feature set) on the shared rows."""
     X, y = build_features(df, target=target, with_future_weather=fw)
@@ -202,11 +211,7 @@ def write_report(results: list[dict], chosen: dict, chosen_kind: str, rows: int,
 def main() -> None:
     """Run the grid, choose the model by the rule above, and save model, metrics, plots and report."""
     df = pd.read_parquet(DATA_PATH).asfreq("h")
-    keep = pd.Series(True, index=df.index)
-    for target, fw in CONFIGS:  # rows valid for EVERY config, so all runs see the same data
-        X, y = build_features(df, target=target, with_future_weather=fw)
-        keep &= X.notna().all(axis=1) & y.notna()
-    rows = df.index[keep]
+    rows = shared_rows(df)
 
     results = [run_config(df, rows, target, fw) for target, fw in CONFIGS]
     candidates = [(r["val_mae"][kind], i, kind) for i, r in enumerate(results)
