@@ -11,5 +11,6 @@ The original synopsis document isn't in this repository. This list compares what
 | Target y = PM2.5 at t+24 h | Target = mean PM2.5 over the next 24 h, plus next-24 h weather features; LightGBM test MAE 18.07 vs linear 19.53 vs persistence 24.33 | The original t+24 model only tied linear regression (30.0 vs 30.0). The 24-h mean matches the CPCB definition. See model_experiments.md |
 | `hour`/`dow`/`month` features | Computed in India time (IST) | So the daily pattern matches local life (the EDA shows a 22:00 IST peak) |
 | Rejected photos | Their perceptual hash is still stored | Stops someone retrying the same photo with a fixed time or location |
-| Debug APK installed on a phone | Android project, permissions and build script ready; APK not yet built | Android SDK not installed on the build PC (see HANDOFF.md) |
+| Debug APK built in Android Studio and installed on a phone | `BioMantra.apk` built from the command line (`setup_android_sdk.ps1` + `build_apk.ps1`, JDK 21); not yet installed on a phone | Android Studio's own Java 25 is too new for Gradle 8.11. No phone was connected over USB (see HANDOFF.md) |
+| Fixed backend URL in the app | ⚙ Settings page with a saved "Server URL" and a Test connection button, plus `start_demo.ps1` | The laptop's Wi-Fi IP changes between networks; no rebuild is needed |
 | Fraud test with real campus photos | 5 of 8 cases run with stand-in images (COCO photo, synthetic wall) | Real photos need the phone; script `scripts/fraud_tests.py` is ready |

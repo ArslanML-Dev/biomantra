@@ -1,0 +1,45 @@
+# Repository state, 2026-10-29T13:39:04Z
+
+## git status
+On branch master
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	docs/report_pack/
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+## pytest -q (backend)
+...................................                                      [100%]
+35 passed in 5.52s
+
+## git log --oneline -30
+81c40ac docs: fix setup command path
+b2bd4b9 build: SDK setup without Android Studio UI, JDK 21, APK build and docs
+6fb9f7b feat: next-24h mean target with next-24h weather features (model v2)
+caf6507 docs: 2-minute DEMO.md, README and handoff pointers
+853944b feat: mobile UI polish and Playwright screenshots of every page
+bc94c54 feat: start_demo.ps1 one-step laptop demo launcher
+b0b0933 feat: Settings page with saved Server URL and Test connection
+bad1657 docs: handoff with remaining user steps
+09430be docs: README, changes from plan, demo rehearsal
+3872580 test: fraud test script and first results
+54e06b5 docs: deploy status
+e2c6fa9 feat: Render and Vercel deploy configs
+34a8c31 feat: About page with real metrics and limitations
+a3cd302 feat: admin review page
+c6a60c9 feat: map page with forecast circle and hotspots
+3d06f73 test: cleanup before/after API flow
+e99bf72 feat: Act screen with live camera, GPS and result view
+d01ee61 feat: Capacitor Android project with camera and location permissions
+536b5ad feat: leaderboard screen
+9159c6d feat: user picker and Home forecast card
+4d2cf8f feat: React + Vite frontend skeleton
+0d06409 feat: actions, scoring, leaderboard, hotspots and admin review
+da6af82 feat: verification pipeline with YOLOv8n and tests
+0923b85 fix: restore TASKS.md encoding
+15f4dd4 feat: SQLite schema, seed data and /meta
+01fc2ee feat: /forecast endpoint with SHAP reason and EN/HI tips
+bc836e2 test: forecast leakage and band-edge tests
+741a0b6 feat: forecast features and model training
+252083a feat: EDA plots and notes
+d2a261c feat: weather download and merged hourly dataset

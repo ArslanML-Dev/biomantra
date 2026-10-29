@@ -10,12 +10,14 @@ Images are **not** real campus photos: `coco_139_plant.jpg` is COCO val2017 imag
 |---|---|---|---|---|---|
 | 1 | Potted plant photo (COCO stand-in) | approved or needs_review | needs_review | 0.421 | AI is not fully sure — sent to a coordinator |
 | 2 | Same photo submitted again | rejected (duplicate) | rejected | – | this photo (or a near copy) was already submitted |
-| 3 | Photo of a screen showing a plant image | record the honest result | **not run: needs a real phone photo** | | |
+| 3 | Photo of a screen showing a plant image | record the honest result | **PENDING – needs real phone photo** | | |
 | 4 | Far location (Mumbai coordinates) | rejected (geofence) | rejected | – | outside the allowed area; this photo (or a near copy) was already submitted |
 | 5 | client_time 2 h old | rejected (clock) | rejected | – | photo time does not match server time; this photo (or a near copy) was already submitted |
-| 6 | Cleanup, before littered → after clean | approved / needs_review | **not run: needs real before/after photos** | | |
-| 7 | Cleanup, after still littered | rejected | **not run: needs real before/after photos** | | |
+| 6 | Cleanup, before littered → after clean | approved / needs_review | **PENDING – needs real phone photo** (before + after) | | |
+| 7 | Cleanup, after still littered | rejected | **PENDING – needs real phone photo** (before + after) | | |
 | 8 | Random photo (wall) as sapling | rejected | rejected | 0.0 | AI could not confirm the action |
+
+**Summary:** 5 of 8 cases have real results (1, 2, 4, 5, 8; all as expected). Cases 3, 6 and 7 are PENDING: no result has been recorded or estimated for them.
 
 Cases 4 and 5 reuse the wall photo from case 8, so they also show the duplicate reason. All reasons are returned to the client by design.
 The cleanup logic for cases 6/7 is covered by `tests/test_api.py::test_cleanup_before_after_flow`, but only with mocked YOLO.
