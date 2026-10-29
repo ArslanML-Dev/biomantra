@@ -71,7 +71,8 @@ cd frontend
 ```
 Dev builds allow cleartext http to the laptop. For a build against an https backend, run `$env:CAP_RELEASE="1"` first.
 
-### Deploy
+### Deploy (live)
+- Website: https://biomantra.vercel.app (Vercel). Backend: https://biomantra-api.onrender.com (Render free, Docker, `render.yaml`). See docs/DEMO.md "Online version".
 - Backend: `render.yaml` (Render free web service), or run locally and expose it with `ngrok http 8000`.
 - Website: Vercel with root `frontend/`, `vercel.json` handles SPA routes, and the env var `VITE_API_URL` = backend URL.
 
