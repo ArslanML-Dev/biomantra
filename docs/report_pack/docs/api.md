@@ -86,10 +86,30 @@ Sorting is by `points_week`, then `points_total`, then name. The week runs from 
 ```
 
 ## 6. GET /hotspots
-No inputs. Each item is `{"id","lat","lon","created_at","open","cleaned_at"}`. A hotspot is created when a `dumping_report` is approved, and closed by an approved `cleanup` within 150 m. In the real sample run no dumping report was approved, so the list was empty:
+No inputs. Each item is `{"id","lat","lon","created_at","open","cleaned_at"}`. A hotspot is created when a `dumping_report` is approved, and closed by an approved `cleanup` within 150 m.
+
+**Real hotspot lifecycle** (`raw/api_check_hotspots.txt`):
+- Throwaway database, real YOLOv8n, 2026-10-29 14:11 UTC.
+- Photos: COCO val2017 #4134 (3 litter objects detected) as the dumping report; COCO #285 (no litter) as the cleanup "after".
+- Locations were set in the request.
+
+1. `POST /actions` dumping_report at the campus point → `{"id":1,"status":"needs_review","confidence":0.454,"points":0,…}`. The mean of the top-2 litter confidences, 0.454, falls in the 0.30–0.60 review band.
+2. `GET /hotspots` before approval:
 ```json
 []
 ```
+3. `POST /admin/review/1` approve → `{"id":1,"status":"approved","points":2}`.
+4. `GET /hotspots` after approval:
+```json
+[{"id":1,"lat":28.4725,"lon":77.4889,"created_at":"2026-10-29T14:11:22+00:00","open":true,"cleaned_at":null}]
+```
+5. `POST /actions` cleanup about 55 m north (before = #4134, after = #285) → `{"id":2,"status":"approved","confidence":1.0,"points":5,"reasons":["AI confirmed the action"],"detections":[{"name":"bear","conf":0.964,…}]}`.
+6. `GET /hotspots` after the cleanup:
+```json
+[{"id":1,"lat":28.4725,"lon":77.4889,"created_at":"2026-10-29T14:11:22+00:00","open":false,"cleaned_at":"2026-10-29T14:11:23+00:00"}]
+```
+
+Note: step 5 shows a real weakness. The cleanup check only counts litter before and after, so an unrelated "after" photo (here, a bear) was accepted. See `limitations.md`.
 
 ## 7. GET /admin/review
 Header: `X-Admin-Token: <ADMIN_TOKEN from backend/.env>`. Without it, or with a wrong token, the endpoint returns HTTP 401 `{"detail":"invalid admin token"}`.

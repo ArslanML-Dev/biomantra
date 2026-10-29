@@ -1,0 +1,340 @@
+Project folder tree (excludes node_modules, .venv, data, build, android/build, .git, __pycache__, .pytest_cache, dist, .gradle and the generated android assets/public copy)
+
+BIO-MANTRA-PROTOTYPE/
+├── .vscode/
+│   └── settings.json
+├── backend/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── config.py
+│   │   ├── db.py
+│   │   ├── forecast.py
+│   │   ├── main.py
+│   │   ├── scoring.py
+│   │   └── verify.py
+│   ├── models/
+│   │   ├── feature_list.json
+│   │   ├── lgbm.txt
+│   │   ├── metrics.json
+│   │   └── yolov8n.pt
+│   ├── scripts/
+│   │   ├── __init__.py
+│   │   ├── check_ai.py
+│   │   ├── code_excerpts.py
+│   │   ├── dataset_summary.py
+│   │   ├── eda.py
+│   │   ├── fetch_history.py
+│   │   ├── fetch_weather.py
+│   │   ├── finalize_report_pack.py
+│   │   ├── fraud_tests.py
+│   │   ├── make_dataset.py
+│   │   ├── report_figures.py
+│   │   └── train_forecast.py
+│   ├── tests/
+│   │   ├── __init__.py
+│   │   ├── conftest.py
+│   │   ├── test_api.py
+│   │   ├── test_dataset.py
+│   │   ├── test_forecast.py
+│   │   ├── test_scoring.py
+│   │   └── test_verify.py
+│   ├── uploads/
+│   ├── .env
+│   ├── .env.example
+│   ├── biomantra.db
+│   └── requirements.txt
+├── docs/
+│   ├── evidence/
+│   │   ├── model_v1/
+│   │   │   ├── confusion_matrix.png
+│   │   │   ├── feature_importance.png
+│   │   │   ├── metrics.json
+│   │   │   ├── pred_vs_actual.png
+│   │   │   └── shap_summary.png
+│   │   ├── screens/
+│   │   │   ├── .gitkeep
+│   │   │   ├── laptop_01_user_picker.png
+│   │   │   ├── laptop_02_home_en.png
+│   │   │   ├── laptop_03_home_hi.png
+│   │   │   ├── laptop_04_act_website.png
+│   │   │   ├── laptop_05_leaderboard_institutions.png
+│   │   │   ├── laptop_06_leaderboard_users.png
+│   │   │   ├── laptop_07_map.png
+│   │   │   ├── laptop_08_admin_login.png
+│   │   │   ├── laptop_09_admin_queue.png
+│   │   │   ├── laptop_10_about.png
+│   │   │   ├── laptop_11_settings.png
+│   │   │   ├── phone_01_user_picker.png
+│   │   │   ├── phone_02_home_en.png
+│   │   │   ├── phone_03_home_hi.png
+│   │   │   ├── phone_04_act_website.png
+│   │   │   ├── phone_05_leaderboard_institutions.png
+│   │   │   ├── phone_06_leaderboard_users.png
+│   │   │   ├── phone_07_map.png
+│   │   │   ├── phone_08_admin_login.png
+│   │   │   ├── phone_09_admin_queue.png
+│   │   │   ├── phone_09_admin_queue_full.png
+│   │   │   ├── phone_10_about.png
+│   │   │   ├── phone_10_about_full.png
+│   │   │   └── phone_11_settings.png
+│   │   ├── ai_check_samples.md
+│   │   ├── api_check_d1.md
+│   │   ├── changes_from_synopsis.md
+│   │   ├── confusion_matrix.png
+│   │   ├── demo_rehearsal.md
+│   │   ├── eda_correlation.png
+│   │   ├── eda_hourly_pm25.png
+│   │   ├── eda_monthly_pm25.png
+│   │   ├── eda_notes.md
+│   │   ├── eda_pm25_vs_wind.png
+│   │   ├── feature_importance.png
+│   │   ├── model_experiments.md
+│   │   ├── pred_vs_actual.png
+│   │   ├── shap_summary.png
+│   │   └── test_results.md
+│   ├── report_pack/
+│   │   ├── code/
+│   │   │   ├── 01_cpcb_categories.md
+│   │   │   ├── 02_build_features.md
+│   │   │   ├── 03_training_main_loop.md
+│   │   │   ├── 04_shap_reason.md
+│   │   │   ├── 05_tips_and_live_prediction.md
+│   │   │   ├── 06_verify_checks.md
+│   │   │   ├── 07_verify_ai_and_decide.md
+│   │   │   ├── 08_scoring_rules.md
+│   │   │   ├── 09_actions_endpoint.md
+│   │   │   ├── 10_act_camera_gps.md
+│   │   │   └── 11_capacitor_config.md
+│   │   ├── diagrams/
+│   │   │   ├── 01_system_architecture.mmd
+│   │   │   ├── 02_data_pipeline.mmd
+│   │   │   ├── 03_verification_flowchart.mmd
+│   │   │   ├── 04_use_cases.mmd
+│   │   │   ├── 05_er_diagram.mmd
+│   │   │   ├── 06_sequence_submit_action.mmd
+│   │   │   └── 07_deployment.mmd
+│   │   ├── docs/
+│   │   │   ├── api.md
+│   │   │   ├── changes_from_synopsis.md
+│   │   │   ├── db_schema.md
+│   │   │   ├── implementation_story.md
+│   │   │   ├── limitations.md
+│   │   │   ├── tech_stack.md
+│   │   │   ├── testing.md
+│   │   │   └── user_manual.md
+│   │   ├── figures/
+│   │   │   ├── eda_01_monthly_mean_pm25.png
+│   │   │   ├── eda_02_pm25_by_hour.png
+│   │   │   ├── eda_03_pm25_vs_wind.png
+│   │   │   ├── eda_04_correlation_heatmap.png
+│   │   │   ├── model_01_predicted_vs_actual.png
+│   │   │   ├── model_02_residual_histogram.png
+│   │   │   ├── model_03_mae_comparison_v1_v2.png
+│   │   │   ├── model_04_feature_importance.png
+│   │   │   ├── model_05_shap_summary.png
+│   │   │   ├── model_06_confusion_matrix.png
+│   │   │   ├── timeseries_01_one_month_actual_vs_forecast.png
+│   │   │   ├── verify_01_yolo_plant.png
+│   │   │   └── verify_02_yolo_wall.png
+│   │   ├── raw/
+│   │   │   ├── samples/
+│   │   │   │   ├── coco_139_plant.jpg
+│   │   │   │   ├── coco_285_no_litter.jpg
+│   │   │   │   ├── coco_4134_dumping.jpg
+│   │   │   │   └── synthetic_wall.jpg
+│   │   │   ├── ai_check_samples.md
+│   │   │   ├── api_check.txt
+│   │   │   ├── api_check_actions.txt
+│   │   │   ├── api_check_d1.md
+│   │   │   ├── api_check_hotspots.txt
+│   │   │   ├── changes_from_synopsis.md
+│   │   │   ├── demo_rehearsal.md
+│   │   │   ├── eda_notes.md
+│   │   │   ├── feature_list_v2.json
+│   │   │   ├── metrics_v1.json
+│   │   │   ├── metrics_v2.json
+│   │   │   ├── model_experiments.md
+│   │   │   ├── pytest_v_full.txt
+│   │   │   ├── state.txt
+│   │   │   └── test_results.md
+│   │   ├── screenshots/
+│   │   │   ├── laptop_01_user_picker.png
+│   │   │   ├── laptop_02_home_en.png
+│   │   │   ├── laptop_03_home_hi.png
+│   │   │   ├── laptop_04_act_website.png
+│   │   │   ├── laptop_05_leaderboard_institutions.png
+│   │   │   ├── laptop_06_leaderboard_users.png
+│   │   │   ├── laptop_07_map.png
+│   │   │   ├── laptop_08_admin_login.png
+│   │   │   ├── laptop_09_admin_queue.png
+│   │   │   ├── laptop_10_about.png
+│   │   │   ├── laptop_11_settings.png
+│   │   │   ├── phone_01_user_picker.png
+│   │   │   ├── phone_02_home_en.png
+│   │   │   ├── phone_03_home_hi.png
+│   │   │   ├── phone_04_act_website.png
+│   │   │   ├── phone_05_leaderboard_institutions.png
+│   │   │   ├── phone_06_leaderboard_users.png
+│   │   │   ├── phone_07_map.png
+│   │   │   ├── phone_08_admin_login.png
+│   │   │   ├── phone_09_admin_queue.png
+│   │   │   ├── phone_09_admin_queue_full.png
+│   │   │   ├── phone_10_about.png
+│   │   │   ├── phone_10_about_full.png
+│   │   │   └── phone_11_settings.png
+│   │   ├── MISSING.md
+│   │   └── README.md
+│   ├── DEMO.md
+│   ├── HANDOFF.md
+│   ├── progress.md
+│   ├── SPEC.md
+│   └── TASKS.md
+├── frontend/
+│   ├── android/
+│   │   ├── app/
+│   │   │   ├── src/
+│   │   │   │   ├── androidTest/
+│   │   │   │   │   └── java/
+│   │   │   │   │       └── com/
+│   │   │   │   │           └── getcapacitor/
+│   │   │   │   │               └── myapp/
+│   │   │   │   │                   └── ExampleInstrumentedTest.java
+│   │   │   │   ├── main/
+│   │   │   │   │   ├── assets/
+│   │   │   │   │   │   ├── capacitor.config.json
+│   │   │   │   │   │   └── capacitor.plugins.json
+│   │   │   │   │   ├── java/
+│   │   │   │   │   │   └── in/
+│   │   │   │   │   │       └── biomantra/
+│   │   │   │   │   │           └── app/
+│   │   │   │   │   │               └── MainActivity.java
+│   │   │   │   │   ├── res/
+│   │   │   │   │   │   ├── drawable/
+│   │   │   │   │   │   │   ├── ic_launcher_background.xml
+│   │   │   │   │   │   │   └── splash.png
+│   │   │   │   │   │   ├── drawable-land-hdpi/
+│   │   │   │   │   │   │   └── splash.png
+│   │   │   │   │   │   ├── drawable-land-mdpi/
+│   │   │   │   │   │   │   └── splash.png
+│   │   │   │   │   │   ├── drawable-land-xhdpi/
+│   │   │   │   │   │   │   └── splash.png
+│   │   │   │   │   │   ├── drawable-land-xxhdpi/
+│   │   │   │   │   │   │   └── splash.png
+│   │   │   │   │   │   ├── drawable-land-xxxhdpi/
+│   │   │   │   │   │   │   └── splash.png
+│   │   │   │   │   │   ├── drawable-port-hdpi/
+│   │   │   │   │   │   │   └── splash.png
+│   │   │   │   │   │   ├── drawable-port-mdpi/
+│   │   │   │   │   │   │   └── splash.png
+│   │   │   │   │   │   ├── drawable-port-xhdpi/
+│   │   │   │   │   │   │   └── splash.png
+│   │   │   │   │   │   ├── drawable-port-xxhdpi/
+│   │   │   │   │   │   │   └── splash.png
+│   │   │   │   │   │   ├── drawable-port-xxxhdpi/
+│   │   │   │   │   │   │   └── splash.png
+│   │   │   │   │   │   ├── drawable-v24/
+│   │   │   │   │   │   │   └── ic_launcher_foreground.xml
+│   │   │   │   │   │   ├── layout/
+│   │   │   │   │   │   │   └── activity_main.xml
+│   │   │   │   │   │   ├── mipmap-anydpi-v26/
+│   │   │   │   │   │   │   ├── ic_launcher.xml
+│   │   │   │   │   │   │   └── ic_launcher_round.xml
+│   │   │   │   │   │   ├── mipmap-hdpi/
+│   │   │   │   │   │   │   ├── ic_launcher.png
+│   │   │   │   │   │   │   ├── ic_launcher_foreground.png
+│   │   │   │   │   │   │   └── ic_launcher_round.png
+│   │   │   │   │   │   ├── mipmap-mdpi/
+│   │   │   │   │   │   │   ├── ic_launcher.png
+│   │   │   │   │   │   │   ├── ic_launcher_foreground.png
+│   │   │   │   │   │   │   └── ic_launcher_round.png
+│   │   │   │   │   │   ├── mipmap-xhdpi/
+│   │   │   │   │   │   │   ├── ic_launcher.png
+│   │   │   │   │   │   │   ├── ic_launcher_foreground.png
+│   │   │   │   │   │   │   └── ic_launcher_round.png
+│   │   │   │   │   │   ├── mipmap-xxhdpi/
+│   │   │   │   │   │   │   ├── ic_launcher.png
+│   │   │   │   │   │   │   ├── ic_launcher_foreground.png
+│   │   │   │   │   │   │   └── ic_launcher_round.png
+│   │   │   │   │   │   ├── mipmap-xxxhdpi/
+│   │   │   │   │   │   │   ├── ic_launcher.png
+│   │   │   │   │   │   │   ├── ic_launcher_foreground.png
+│   │   │   │   │   │   │   └── ic_launcher_round.png
+│   │   │   │   │   │   ├── values/
+│   │   │   │   │   │   │   ├── ic_launcher_background.xml
+│   │   │   │   │   │   │   ├── strings.xml
+│   │   │   │   │   │   │   └── styles.xml
+│   │   │   │   │   │   └── xml/
+│   │   │   │   │   │       ├── config.xml
+│   │   │   │   │   │       └── file_paths.xml
+│   │   │   │   │   └── AndroidManifest.xml
+│   │   │   │   └── test/
+│   │   │   │       └── java/
+│   │   │   │           └── com/
+│   │   │   │               └── getcapacitor/
+│   │   │   │                   └── myapp/
+│   │   │   │                       └── ExampleUnitTest.java
+│   │   │   ├── .gitignore
+│   │   │   ├── build.gradle
+│   │   │   ├── capacitor.build.gradle
+│   │   │   └── proguard-rules.pro
+│   │   ├── capacitor-cordova-android-plugins/
+│   │   │   ├── src/
+│   │   │   │   └── main/
+│   │   │   │       ├── java/
+│   │   │   │       │   └── .gitkeep
+│   │   │   │       ├── res/
+│   │   │   │       │   └── .gitkeep
+│   │   │   │       └── AndroidManifest.xml
+│   │   │   ├── build.gradle
+│   │   │   └── cordova.variables.gradle
+│   │   ├── gradle/
+│   │   │   └── wrapper/
+│   │   │       ├── gradle-wrapper.jar
+│   │   │       └── gradle-wrapper.properties
+│   │   ├── .gitignore
+│   │   ├── build.gradle
+│   │   ├── capacitor.settings.gradle
+│   │   ├── gradle.properties
+│   │   ├── gradlew
+│   │   ├── gradlew.bat
+│   │   ├── local.properties
+│   │   ├── settings.gradle
+│   │   └── variables.gradle
+│   ├── scripts/
+│   │   └── screenshots.mjs
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── About.tsx
+│   │   │   ├── Act.tsx
+│   │   │   ├── Admin.tsx
+│   │   │   ├── Home.tsx
+│   │   │   ├── Leaderboard.tsx
+│   │   │   ├── MapPage.tsx
+│   │   │   ├── Settings.tsx
+│   │   │   └── UserPicker.tsx
+│   │   ├── api.ts
+│   │   ├── App.tsx
+│   │   ├── i18n.ts
+│   │   ├── main.tsx
+│   │   ├── styles.css
+│   │   └── user.ts
+│   ├── .env
+│   ├── .env.example
+│   ├── build_apk.ps1
+│   ├── capacitor.config.ts
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── setup_android_sdk.ps1
+│   ├── tsconfig.json
+│   ├── tsconfig.tsbuildinfo
+│   ├── vercel.json
+│   └── vite.config.ts
+├── .gitignore
+├── BioMantra.apk
+├── biomantra_claude_code_kit.zip
+├── CLAUDE.md
+├── README.md
+├── render.yaml
+├── start_demo.ps1
+└── START_HERE.md

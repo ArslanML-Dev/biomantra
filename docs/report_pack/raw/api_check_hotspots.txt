@@ -1,0 +1,24 @@
+# Real hotspot lifecycle, 2026-10-29T14:11:18Z
+# Fresh throwaway database; real YOLOv8n. Photos: raw/samples/coco_4134_dumping.jpg (COCO val2017 #4134) and raw/samples/coco_285_no_litter.jpg (COCO val2017 #285), CC BY 4.0.
+# Locations were set in the request (campus, and 0.0005 deg north = about 55 m).
+
+## 1. POST /actions dumping_report (photo #4134, at campus 28.4725, 77.4889)
+{"id":1,"status":"needs_review","confidence":0.454,"points":0,"reasons":["AI is not fully sure — sent to a coordinator"],"detections":[{"name":"person","conf":0.918,"box":[205.3,45.9,584.8,423.8]},{"name":"tie","conf":0.9,"box":[394.6,190.4,433.7,366.9]},{"name":"person","conf":0.812,"box":[43.5,42.0,316.6,421.8]},{"name":"person","conf":0.79,"box":[2.0,112.8,75.0,261.5]},{"name":"person","conf":0.782,"box":[470.8,111.2,523.8,177.3]},{"name":"person","conf":0.747,"box":[188.1,128.8,230.2,253.9]},{"name":"person","conf":0.7,"box":[298.4,123.9,336.8,269.6]},{"name":"person","conf":0.651,"box":[574.5,105.6,639.0,241.5]},{"name":"person","conf":0.611,"box":[238.0,129.6,275.4,205.9]},{"name":"person","conf":0.586,"box":[577.9,148.2,639.9,421.4]},{"name":"person","conf":0.556,"box":[67.5,128.0,100.2,204.1]},{"name":"wine glass","conf":0.538,"box":[221.2,241.9,236.0,263.3]},{"name":"dining table","conf":0.422,"box":[227.2,202.5,287.2,254.5]},{"name":"dining table","conf":0.419,"box":[227.7,204.7,287.5,237.4]},{"name":"dining table","conf":0.402,"box":[0.0,255.2,53.9,380.0]},{"name":"dining table","conf":0.381,"box":[228.6,204.8,287.5,227.9]},{"name":"person","conf":0.376,"box":[546.8,141.3,580.3,193.6]},{"name":"wine glass","conf":0.37,"box":[221.2,242.7,239.8,269.8]},{"name":"person","conf":0.346,"box":[257.8,183.5,309.6,270.2]},{"name":"cup","conf":0.337,"box":[20.5,245.9,36.7,267.1]},{"name":"person","conf":0.331,"box":[347.7,138.6,374.5,198.6]},{"name":"person","conf":0.266,"box":[365.7,145.3,399.4,189.1]},{"name":"laptop","conf":0.259,"box":[586.7,203.0,618.0,239.6]},{"name":"person","conf":0.256,"box":[516.2,139.5,537.4,180.4]}]}
+
+## 2. GET /hotspots (before approval)
+[]
+
+## 3. POST /admin/review/1 {"decision":"approve","reviewer":"coordinator"}  (X-Admin-Token from .env, not shown)
+{"id":1,"status":"approved","points":2}
+
+## 4. GET /hotspots (after approving the dumping report)
+[{"id":1,"lat":28.4725,"lon":77.4889,"created_at":"2026-10-29T14:11:22+00:00","open":true,"cleaned_at":null}]
+
+## 5. POST /actions cleanup at 28.4730, 77.4889 (about 55 m away): before_photo = #4134, photo (after) = #285
+{"id":2,"status":"approved","confidence":1.0,"points":5,"reasons":["AI confirmed the action"],"detections":[{"name":"bear","conf":0.964,"box":[30.1,74.5,580.8,638.5]}]}
+
+## 6. GET /hotspots (after the cleanup)
+[{"id":1,"lat":28.4725,"lon":77.4889,"created_at":"2026-10-29T14:11:22+00:00","open":false,"cleaned_at":"2026-10-29T14:11:23+00:00"}]
+
+## 7. GET /leaderboard?scope=institutions
+[{"rank":1,"id":3,"name":"CSE-AIML","points_total":5,"points_week":5,"goal":50,"progress":0.1},{"rank":2,"id":2,"name":"CSE-AI","points_total":2,"points_week":2,"goal":50,"progress":0.04},{"rank":3,"id":1,"name":"CSE-DS","points_total":0,"points_week":0,"goal":50,"progress":0.0},{"rank":4,"id":4,"name":"CSE-IT","points_total":0,"points_week":0,"goal":50,"progress":0.0},{"rank":5,"id":5,"name":"ECE","points_total":0,"points_week":0,"goal":50,"progress":0.0}]

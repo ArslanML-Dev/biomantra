@@ -45,11 +45,12 @@ The data behind them is a **separate demo database**. It holds one real submissi
 | `api_check.txt` | `start_demo.ps1 -Fresh` run: real responses of /health, /forecast (en, hi), /meta, /leaderboard, all HTTP 200 |
 | `pytest_v_full.txt` | Full `pytest -v` output (35 passed) |
 | `api_check_actions.txt` | Real responses of POST /actions, /admin/review, /leaderboard, /hotspots, /uploads |
+| `api_check_hotspots.txt` | Real hotspot lifecycle: dumping report → admin approve → open hotspot → cleanup about 55 m away → closed |
 | `metrics_v2.json`, `metrics_v1.json`, `feature_list_v2.json` | Model metrics (deployed v2, original v1) and v2 feature list |
 | `model_experiments.md` | Full 4-configuration × 3-model results table and interpretation |
 | `test_results.md` | Fraud test: 5 real results, 3 PENDING |
 | `eda_notes.md`, `ai_check_samples.md`, `api_check_d1.md`, `demo_rehearsal.md`, `changes_from_synopsis.md` | Earlier evidence notes |
-| `samples/` | The two input images used for the verification figures |
+| `samples/` | Input photos: COCO #139 (plant), generated wall (verification figures), COCO #4134 and #285 (hotspot run). COCO images are CC BY 4.0 |
 
 ## diagrams/
 

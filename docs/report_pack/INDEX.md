@@ -1,0 +1,109 @@
+# Bio Mantra report pack: index
+
+## Key numbers (read from the files in this pack)
+
+- **Model v2 (deployed):** LightGBM, target = mean PM2.5 over the next 24 h, past + next-24 h weather. Test: MAE 18.065, RMSE 26.297, R² 0.682, category accuracy 0.559, macro-F1 0.478, recall Poor+ 0.771.
+  - Same target, baselines: linear MAE 19.525, persistence MAE 24.333.
+- **Model v1 (original):** LightGBM, target = PM2.5 at t+24 h, past features. Test: MAE 30.018, RMSE 44.156, R² 0.363, category accuracy 0.399, macro-F1 0.335, recall Poor+ 0.681.
+  - v1 baselines: linear MAE 29.973, persistence MAE 33.657.
+- **Test period:** 2026-03-08 → 2026-10-25. v2 scores are an upper bound (actual next-day weather was used as a stand-in for a forecast).
+- **Data:** 37,080 hourly rows, 2022-08-04 → 2026-10-26 (UTC), Open-Meteo (modelled).
+  - 37,008 rows were usable by every model.
+- **Split (time order):** train 25,905 (2022-08-06 → 2025-07-20); val 5,551 (2025-07-20 → 2026-03-08); test 5,552 (2026-03-08 → 2026-10-25).
+- **Tests:** 35 passed, 4 warnings in 3.07s (pytest; YOLO mocked).
+- **Fraud test:** 5 of 8 cases real, 3 PENDING (need phone photos).
+- **Figures:** 13 (300 dpi, black-and-white safe). **Screenshots:** 24 (headless, phone and laptop size, sample database).
+
+## Files (92, including this index)
+
+- `code/01_cpcb_categories.md`: CPCB bands and pm25_to_category
+- `code/02_build_features.md`: Feature building (past features, next-24 h weather, targets)
+- `code/03_training_main_loop.md`: Training: one configuration, and the main experiment loop
+- `code/04_shap_reason.md`: SHAP reason sentence (EN/HI)
+- `code/05_tips_and_live_prediction.md`: Health tips, disclaimer and live SHAP prediction
+- `code/06_verify_checks.md`: Anti-fraud checks: clock, geofence, duplicate (pHash)
+- `code/07_verify_ai_and_decide.md`: AI check (YOLOv8n, COCO stand-in classes) and the decision thresholds
+- `code/08_scoring_rules.md`: Scoring rules: points, weekly window, hotspots
+- `code/09_actions_endpoint.md`: POST /actions endpoint
+- `code/10_act_camera_gps.md`: React Act screen: live camera + GPS + submit
+- `code/11_capacitor_config.md`: Capacitor configuration
+- `data/dataset_summary.md`: Dataset summary
+- `data/eda_notes.md`: EDA notes (from `backend/scripts/eda.py`, data: Open-Meteo modelled PM2.5, 2022-08-04 → 2026-10-26)
+- `data/feature_list.json`: JSON data
+- `data/metrics_v1.json`: JSON data
+- `data/metrics_v2.json`: JSON data
+- `diagrams/01_system_architecture.mmd`: Mermaid diagram source
+- `diagrams/02_data_pipeline.mmd`: Mermaid diagram source
+- `diagrams/03_verification_flowchart.mmd`: Mermaid diagram source
+- `diagrams/04_use_cases.mmd`: Mermaid diagram source
+- `diagrams/05_er_diagram.mmd`: Mermaid diagram source
+- `diagrams/06_sequence_submit_action.mmd`: Mermaid diagram source
+- `diagrams/07_deployment.mmd`: Mermaid diagram source
+- `docs/api.md`: API reference (FastAPI, `backend/app/main.py`)
+- `docs/changes_from_synopsis.md`: Changes from the synopsis / plan
+- `docs/db_schema.md`: Database schema (SQLite, `backend/biomantra.db`)
+- `docs/folder_tree.txt`: text output
+- `docs/git_log.txt`: text output
+- `docs/implementation_story.md`: Implementation story: real problems and how they were fixed
+- `docs/limitations.md`: Limitations (honest)
+- `docs/tech_stack.md`: Technology stack (exact versions, as installed on 2026-10-29)
+- `docs/testing.md`: Testing
+- `docs/user_manual.md`: Bio Mantra: user manual (install and run)
+- `figures/eda_01_monthly_mean_pm25.png`: figure / screenshot (PNG)
+- `figures/eda_02_pm25_by_hour.png`: figure / screenshot (PNG)
+- `figures/eda_03_pm25_vs_wind.png`: figure / screenshot (PNG)
+- `figures/eda_04_correlation_heatmap.png`: figure / screenshot (PNG)
+- `figures/model_01_predicted_vs_actual.png`: figure / screenshot (PNG)
+- `figures/model_02_residual_histogram.png`: figure / screenshot (PNG)
+- `figures/model_03_mae_comparison_v1_v2.png`: figure / screenshot (PNG)
+- `figures/model_04_feature_importance.png`: figure / screenshot (PNG)
+- `figures/model_05_shap_summary.png`: figure / screenshot (PNG)
+- `figures/model_06_confusion_matrix.png`: figure / screenshot (PNG)
+- `figures/timeseries_01_one_month_actual_vs_forecast.png`: figure / screenshot (PNG)
+- `figures/verify_01_yolo_plant.png`: figure / screenshot (PNG)
+- `figures/verify_02_yolo_wall.png`: figure / screenshot (PNG)
+- `MISSING.md`: What is still missing, and why
+- `raw/ai_check_samples.md`: D1-T9 AI check on 2 local images (`python scripts/check_ai.py sapling <plant> <wall>`)
+- `raw/api_check.txt`: text output
+- `raw/api_check_actions.txt`: text output
+- `raw/api_check_d1.md`: D1-T10 live API check (real YOLOv8n, local server, 2026-10-28)
+- `raw/api_check_hotspots.txt`: text output
+- `raw/changes_from_synopsis.md`: Changes from the synopsis / plan
+- `raw/demo_rehearsal.md`: Demo rehearsal (API level, 2026-10-29)
+- `raw/eda_notes.md`: EDA notes (from `backend/scripts/eda.py`, data: Open-Meteo modelled PM2.5, 2022-08-04 → 2026-10-26)
+- `raw/feature_list_v2.json`: JSON data
+- `raw/metrics_v1.json`: JSON data
+- `raw/metrics_v2.json`: JSON data
+- `raw/model_experiments.md`: Forecast model experiments
+- `raw/pytest_v_full.txt`: text output
+- `raw/samples/coco_139_plant.jpg`: input photo
+- `raw/samples/coco_285_no_litter.jpg`: input photo
+- `raw/samples/coco_4134_dumping.jpg`: input photo
+- `raw/samples/synthetic_wall.jpg`: input photo
+- `raw/state.txt`: text output
+- `raw/test_results.md`: Fraud test results (SPEC §12)
+- `README.md`: Bio Mantra: report pack
+- `screenshots/laptop_01_user_picker.png`: figure / screenshot (PNG)
+- `screenshots/laptop_02_home_en.png`: figure / screenshot (PNG)
+- `screenshots/laptop_03_home_hi.png`: figure / screenshot (PNG)
+- `screenshots/laptop_04_act_website.png`: figure / screenshot (PNG)
+- `screenshots/laptop_05_leaderboard_institutions.png`: figure / screenshot (PNG)
+- `screenshots/laptop_06_leaderboard_users.png`: figure / screenshot (PNG)
+- `screenshots/laptop_07_map.png`: figure / screenshot (PNG)
+- `screenshots/laptop_08_admin_login.png`: figure / screenshot (PNG)
+- `screenshots/laptop_09_admin_queue.png`: figure / screenshot (PNG)
+- `screenshots/laptop_10_about.png`: figure / screenshot (PNG)
+- `screenshots/laptop_11_settings.png`: figure / screenshot (PNG)
+- `screenshots/phone_01_user_picker.png`: figure / screenshot (PNG)
+- `screenshots/phone_02_home_en.png`: figure / screenshot (PNG)
+- `screenshots/phone_03_home_hi.png`: figure / screenshot (PNG)
+- `screenshots/phone_04_act_website.png`: figure / screenshot (PNG)
+- `screenshots/phone_05_leaderboard_institutions.png`: figure / screenshot (PNG)
+- `screenshots/phone_06_leaderboard_users.png`: figure / screenshot (PNG)
+- `screenshots/phone_07_map.png`: figure / screenshot (PNG)
+- `screenshots/phone_08_admin_login.png`: figure / screenshot (PNG)
+- `screenshots/phone_09_admin_queue.png`: figure / screenshot (PNG)
+- `screenshots/phone_09_admin_queue_full.png`: figure / screenshot (PNG)
+- `screenshots/phone_10_about.png`: figure / screenshot (PNG)
+- `screenshots/phone_10_about_full.png`: figure / screenshot (PNG)
+- `screenshots/phone_11_settings.png`: figure / screenshot (PNG)
