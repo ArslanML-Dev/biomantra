@@ -1,0 +1,10 @@
+.venv
+.env
+data
+uploads
+*.db
+__pycache__
+.pytest_cache
+tests
+scripts
+models/yolov8n.pt

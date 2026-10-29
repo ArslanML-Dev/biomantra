@@ -15,3 +15,6 @@ android/app/build/
 BioMantra.apk
 report_pack.zip
 BioMantra_Report_Ch4-5.pdf
+deploy/admin_token.txt
+deploy/README_space.md
+.vercel/

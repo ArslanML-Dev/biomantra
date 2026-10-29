@@ -28,8 +28,11 @@ MAX_UPLOAD_BYTES = 15 * 1024 * 1024  # a 12 MP phone JPEG at quality 80 is about
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    """Create and seed the database on startup."""
+    """Create and seed the database on startup; optionally load both models so the first request is fast."""
     init_db()
+    if os.getenv("WARM_MODELS") == "1":  # set in the Docker image; off in tests and local dev
+        load_model()
+        verify.get_model()
     yield
 
 
