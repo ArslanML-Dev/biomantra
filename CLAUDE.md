@@ -1,6 +1,6 @@
 # Bio Mantra: instructions for Claude Code
 
-You are helping a team of 4 B.Tech CSE (Data Science) students build a **3-day prototype** of Bio Mantra for their mini project. They will submit the prototype and a 40-page report, and defend both in a viva.
+You are helping a B.Tech CSE (Data Science) student build a **3-day prototype** of Bio Mantra for a mini project. It will be submitted with a 40-page report and defended in a viva.
 
 **Read these before any work:**
 1. `docs/SPEC.md`: exact technical details (data, model, API, database, screens, tests). Treat it as the source of truth.
