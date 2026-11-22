@@ -1,8 +1,21 @@
-# Bio Mantra (prototype)
+# Bio Mantra
+
+**Live:** https://biomantra.vercel.app
 
 Bio Mantra forecasts **tomorrow's PM2.5 and CPCB air-quality category** for the campus area, explains the forecast in one plain English/Hindi sentence (SHAP), and **rewards verified eco-actions**. A live phone photo must pass an anti-fraud gate and a YOLOv8 check. Uncertain cases go to a human reviewer, and verified dumping reports become map hotspots until someone verifies a clean-up.
 
-It's a 3-day B.Tech CSE (Data Science) mini-project prototype: one FastAPI backend, and one React codebase that serves both the website and the Android app (via Capacitor).
+Built as my B.Tech CSE (Data Science) mini project: one FastAPI backend, and one React codebase that serves both the website and the Android app (via Capacitor).
+
+## Why this matters
+
+I built Bio Mantra because, like most people in north India, I see the AQI number every winter but have no clear way to plan around it or do anything about it.
+
+The scale of the problem:
+
+- **1.67 million deaths** in India in 2019 were attributable to air pollution, **17.8% of all deaths** in the country that year. ([India State-Level Disease Burden Initiative, *The Lancet Planetary Health*, 2021](https://doi.org/10.1016/S2542-5196(20)30298-9))
+- The same study estimated the economic loss from these deaths and illness at **US$36.8 billion, 1.36% of India's GDP**.
+
+Bio Mantra turns that number into action: a next-day forecast with a plain-language reason and a health tip people can plan around, plus a way to take part in fixing it, with verified planting, clean-ups and dumping reports that build a live local map.
 
 ## Architecture
 
